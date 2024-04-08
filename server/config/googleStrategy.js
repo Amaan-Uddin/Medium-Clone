@@ -1,3 +1,4 @@
+const User = require('../models/User')
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 
@@ -18,10 +19,12 @@ passport.use(
 				if (!user) {
 					// create user, if user does not exist
 					const newUser = await User.create({
-						firstname: data.given_name,
-						lastname: data.family_name,
-						user_image: data.picture,
 						email: data.email,
+						googleId: data.id,
+						firstName: data.given_name,
+						lastName: data.family_name,
+						displayName: data.displayName,
+						photos: profile.photos.map((photo) => photo.value),
 					})
 					return await done(null, newUser)
 				}

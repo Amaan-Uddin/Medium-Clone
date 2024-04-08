@@ -4,6 +4,7 @@ import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout/Layout'
 import Home from './components/Body/Home'
 import Login from './components/Auth/Login'
+import { UserContextProvider } from './components/Context/UserContext'
 
 function App() {
 	const [articles, setArticles] = useState([
@@ -29,15 +30,18 @@ function App() {
 		},
 	])
 
+	const [user, setUser] = useState({})
 	return (
 		<>
-			<Routes>
-				<Route path="/" element={<Layout />}>
-					<Route index element={<Home articles={articles} />}></Route>
-					{/* <Route path='signup' element={}></Route> */}
-				</Route>
-				<Route path="login" element={<Login />}></Route>
-			</Routes>
+			<UserContextProvider value={{ user, setUser }}>
+				<Routes>
+					<Route path="/" element={<Layout />}>
+						<Route index element={<Home articles={articles} />}></Route>
+						{/* <Route path='signup' element={}></Route> */}
+					</Route>
+					<Route path="login" element={<Login />}></Route>
+				</Routes>
+			</UserContextProvider>
 		</>
 	)
 }

@@ -1,5 +1,9 @@
-import { Link } from 'react-router-dom'
 const Login = () => {
+	const googleAuth = async (e) => {
+		e.preventDefault()
+		window.open('http://localhost:5000/auth/google', '_self')
+	}
+
 	return (
 		<main className="login-main">
 			<section className="container box d-flex flex-column align-items-center">
@@ -34,9 +38,9 @@ const Login = () => {
 							<button className="btn btn-primary w-100 rounded-5">Submit</button>
 						</form>
 						<span className="text-center my-2 text-secondary">or</span>
-						<Link to={'#'}>
-							<button className="btn btn-success rounded-5 w-100">Login with Google</button>
-						</Link>
+						<button onClick={googleAuth} className="btn btn-success rounded-5 w-100">
+							Login with Google
+						</button>
 					</div>
 				</div>
 			</section>

@@ -101,3 +101,21 @@ img {
 .auth-title {
 	width: 20rem;
 }
+
+.profile-pic {
+	border-radius: 50% 50%;
+	width: 2.4rem;
+}
+
+.profile-pic img {
+	border-radius: 50% 50%;
+}
+
+.dropdown-toggle {
+	border: 0px;
+	background: transparent;
+}
+
+.dropdown-toggle::after {
+	display: none;
+}
