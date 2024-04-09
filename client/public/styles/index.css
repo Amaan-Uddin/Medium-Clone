@@ -119,3 +119,19 @@ img {
 .dropdown-toggle::after {
 	display: none;
 }
+
+.new-blog-form {
+	width: 100%;
+}
+
+.new-blog-inputs {
+	border: 0;
+	border-bottom: 1px solid rgb(170, 170, 170);
+	background-color: transparent;
+	width: 100%;
+	padding: 0.2rem 0.1rem;
+}
+
+.new-blog-inputs:focus {
+	outline: none;
+}

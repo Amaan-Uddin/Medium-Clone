@@ -1,4 +1,4 @@
-const Register = () => {
+const Signup = () => {
 	return <div>Register</div>
 }
-export default Register
+export default Signup

@@ -16,15 +16,16 @@ const Header = ({ search, setSearch }) => {
 		fetchUser()
 	}, [setUser])
 
+	useEffect(() => {
+		localStorage.setItem('user', JSON.stringify(user))
+	}, [user])
+
 	return (
 		<header className="px-3 border-bottom">
 			<nav className="d-flex justify-content-between align-items-center">
 				<div id="searchbox " className="d-flex align-items-center gap-1">
 					<div className="logo">
-						<img
-							src="LOGO/Logo/01_Black/Symbol/PNG/RGB/Medium-Symbol-Black-RGB@1x.png"
-							alt="show logo"
-						></img>
+						<img src="logos/symbol.png" alt="show logo" />
 					</div>
 					<form
 						onSubmit={(e) => {
@@ -49,7 +50,7 @@ const Header = ({ search, setSearch }) => {
 						{user?.loggedIn === true ? (
 							<>
 								<li className="d-flex align-items-center">
-									<Link to={'/'}>Create Blog</Link>
+									<Link to={'/u/new-blog'}>Write</Link>
 								</li>
 								<li className="profile-pic">
 									<DropDown photo={user.photos[0]} email={user.email} />

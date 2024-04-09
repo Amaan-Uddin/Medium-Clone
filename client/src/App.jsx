@@ -4,6 +4,9 @@ import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout/Layout'
 import Home from './components/Body/Home'
 import Login from './components/Auth/Login'
+import Signup from './components/Auth/Signup'
+import NewBlog from './components/Body/NewBlog'
+import ProtectedRoute from './components/Auth/ProtectedRoute'
 import { UserContextProvider } from './components/Context/UserContext'
 
 function App() {
@@ -30,15 +33,22 @@ function App() {
 		},
 	])
 
-	const [user, setUser] = useState({})
+	const [user, setUser] = useState(() => {
+		const user = localStorage.getItem('user')
+		return user ? JSON.parse(user) : {}
+	})
+
 	return (
 		<>
 			<UserContextProvider value={{ user, setUser }}>
 				<Routes>
 					<Route path="/" element={<Layout />}>
 						<Route index element={<Home articles={articles} />}></Route>
-						{/* <Route path='signup' element={}></Route> */}
 					</Route>
+					<Route path="u" element={<ProtectedRoute />}>
+						<Route path="new-blog" element={<NewBlog />}></Route>
+					</Route>
+					<Route path="signup" element={<Signup />}></Route>
 					<Route path="login" element={<Login />}></Route>
 				</Routes>
 			</UserContextProvider>

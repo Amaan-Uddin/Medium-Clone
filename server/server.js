@@ -8,10 +8,12 @@ const session = require('express-session')
 const MongoStore = require('connect-mongo')
 const passport = require('passport')
 const cors = require('cors')
+const path = require('path')
 require('./config/googleStrategy')
 
 const authRouter = require('./routes/auth')
 const { userAuthenticated } = require('./middleware/checkAuth')
+const { uploadMiddleware } = require('./middleware/uploadMiddleware')
 
 const app = express()
 connectDB()
@@ -22,9 +24,9 @@ app.use(
 	cors({
 		origin: 'http://localhost:5173', // Update this with your React app's URL
 		credentials: true,
-		exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar'],
 	})
 )
+app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(
@@ -56,6 +58,22 @@ app.get('/logout', (req, res) => {
 			res.json({ logout: 'successful' })
 		}
 	})
+})
+
+app.post('/new', uploadMiddleware, (req, res) => {
+	console.log(req.file)
+	// 	{
+	//   fieldname: 'file',
+	//   originalname: 'blog-img.jpg',
+	//   encoding: '7bit',
+	//   mimetype: 'image/jpeg',
+	//   destination: './public/uploads',
+	//   filename: 'file1712674128225.jpg',
+	//   path: 'public\\uploads\\file1712674128225.jpg',
+	//   size: 6720538
+	// }
+
+	res.json({ submit: 'successful' })
 })
 
 app.use('/auth', authRouter)
