@@ -9,6 +9,9 @@ const MongoStore = require('connect-mongo')
 const passport = require('passport')
 const cors = require('cors')
 const path = require('path')
+const fsPromises = require('fs').promises
+const cloudinary = require('./config/cloudinaryConfig')
+const Blog = require('./models/Blog')
 require('./config/googleStrategy')
 
 const authRouter = require('./routes/auth')
@@ -60,20 +63,40 @@ app.get('/logout', (req, res) => {
 	})
 })
 
-app.post('/new', uploadMiddleware, (req, res) => {
-	console.log(req.file)
-	// 	{
-	//   fieldname: 'file',
-	//   originalname: 'blog-img.jpg',
-	//   encoding: '7bit',
-	//   mimetype: 'image/jpeg',
-	//   destination: './public/uploads',
-	//   filename: 'file1712674128225.jpg',
-	//   path: 'public\\uploads\\file1712674128225.jpg',
-	//   size: 6720538
-	// }
+app.post('/new', uploadMiddleware, async (req, res) => {
+	try {
+		const { title, content, description, userId } = req.body
 
-	res.json({ submit: 'successful' })
+		if (!req.file && !userId && !title && !content) {
+			res.send(400).json({ message: 'Image not uploaded.' })
+		}
+		console.log(title, content, description, userId)
+
+		const result = await cloudinary.uploader.upload(req.file.path, {
+			folder: 'mern-blog',
+			resource_type: 'image',
+		})
+
+		const newBlog = await Blog.create({
+			title,
+			content,
+			description,
+			userId,
+			image: {
+				public_id: result.public_id,
+				format: result.format,
+				url: result.url,
+				secure_url: result.secure_url,
+			},
+			userId,
+		})
+		const unlink_res = await fsPromises.unlink(req.file.path)
+		console.log(unlink_res)
+		res.status(200).json(newBlog)
+	} catch (error) {
+		console.error(error)
+		res.sendStatus(500).json({ message: error })
+	}
 })
 
 app.use('/auth', authRouter)

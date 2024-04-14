@@ -6,6 +6,7 @@ import Home from './components/Body/Home'
 import Login from './components/Auth/Login'
 import Signup from './components/Auth/Signup'
 import NewBlog from './components/Body/NewBlog'
+import MyBlog from './components/Body/MyBlog'
 import ProtectedRoute from './components/Auth/ProtectedRoute'
 import { UserContextProvider } from './components/Context/UserContext'
 
@@ -47,6 +48,7 @@ function App() {
 					</Route>
 					<Route path="u" element={<ProtectedRoute />}>
 						<Route path="new-blog" element={<NewBlog />}></Route>
+						<Route path="my-blog" element={<MyBlog />}></Route>
 					</Route>
 					<Route path="signup" element={<Signup />}></Route>
 					<Route path="login" element={<Login />}></Route>
