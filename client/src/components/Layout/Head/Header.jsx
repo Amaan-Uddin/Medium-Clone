@@ -3,7 +3,7 @@ import { useContext, useEffect } from 'react'
 import { UserContext } from '../../Context/UserContext'
 import DropDown from '../Utils/DropDown'
 
-const Header = ({ search, setSearch }) => {
+const Header = ({ search, setSearch, logo }) => {
 	const { user, setUser } = useContext(UserContext)
 
 	useEffect(() => {
@@ -25,9 +25,9 @@ const Header = ({ search, setSearch }) => {
 			<nav className="d-flex justify-content-between align-items-center">
 				<div id="searchbox " className="d-flex align-items-center gap-1">
 					<div className="logo">
-						<img src="logos/symbol.png" alt="show logo" />
+						<img src={logo} alt="logo" />
 					</div>
-					<form
+					{/* <form
 						onSubmit={(e) => {
 							e.preventDefault()
 						}}
@@ -43,7 +43,7 @@ const Header = ({ search, setSearch }) => {
 								setSearch(e.target.value)
 							}}
 						/>
-					</form>
+					</form> */}
 				</div>
 				<div className="mx-4">
 					<ul className="d-flex gap-4">

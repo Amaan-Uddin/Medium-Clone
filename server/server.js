@@ -68,9 +68,8 @@ app.post('/new', uploadMiddleware, async (req, res) => {
 		const { title, content, description, userId } = req.body
 
 		if (!req.file && !userId && !title && !content) {
-			res.send(400).json({ message: 'Image not uploaded.' })
+			res.status(400).json({ message: 'Image not uploaded.' })
 		}
-		console.log(title, content, description, userId)
 
 		const result = await cloudinary.uploader.upload(req.file.path, {
 			folder: 'mern-blog',
@@ -90,12 +89,27 @@ app.post('/new', uploadMiddleware, async (req, res) => {
 			},
 			userId,
 		})
+
 		const unlink_res = await fsPromises.unlink(req.file.path)
 		console.log(unlink_res)
 		res.status(200).json(newBlog)
 	} catch (error) {
 		console.error(error)
 		res.sendStatus(500).json({ message: error })
+	}
+})
+
+app.post('/my-post', userAuthenticated, async (req, res) => {
+	try {
+		const { userId } = req.body
+		if (!userId) res.status(403).json({ message: 'valid userId required' })
+		const myPost = await Blog.find({ userId: userId })
+		if (myPost?.length) {
+			return res.status(200).json(myPost)
+		}
+		res.sendStatus(404)
+	} catch (error) {
+		res.status(500).json({ message: 'failed to fetch post' })
 	}
 })
 

@@ -11,6 +11,8 @@ import ProtectedRoute from './components/Auth/ProtectedRoute'
 import { UserContextProvider } from './components/Context/UserContext'
 
 function App() {
+	const logoPath = '/logos/symbol.png'
+
 	const [articles, setArticles] = useState([
 		{
 			id: '1',
@@ -43,12 +45,12 @@ function App() {
 		<>
 			<UserContextProvider value={{ user, setUser }}>
 				<Routes>
-					<Route path="/" element={<Layout />}>
+					<Route path="/" element={<Layout logo={logoPath} />}>
 						<Route index element={<Home articles={articles} />}></Route>
-					</Route>
-					<Route path="u" element={<ProtectedRoute />}>
-						<Route path="new-blog" element={<NewBlog />}></Route>
-						<Route path="my-blog" element={<MyBlog />}></Route>
+						<Route path="u" element={<ProtectedRoute />}>
+							<Route path="new-blog" element={<NewBlog />}></Route>
+							<Route path="my-blog" element={<MyBlog />}></Route>
+						</Route>
 					</Route>
 					<Route path="signup" element={<Signup />}></Route>
 					<Route path="login" element={<Login />}></Route>

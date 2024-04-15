@@ -2,7 +2,6 @@ import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
 import { useContext, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import DropDown from '../Layout/Utils/DropDown'
 import { UserContext } from '../Context/UserContext'
 
 const modules = {
@@ -56,7 +55,7 @@ const NewBlog = () => {
 				body: formData,
 			})
 			if (!response.ok) throw Error('Error:Failed to post blog to server')
-			navigate('/u/my-blog')
+			navigate('/u/my-blog', { replace: true })
 		} catch (error) {
 			console.error(error)
 		}
@@ -65,18 +64,6 @@ const NewBlog = () => {
 	return (
 		<>
 			<main className="new-blog d-flex flex-column align-items-center ">
-				<header className="d-flex justify-content-between align-items-center w-100 container my-3">
-					<div className="logo">
-						<img src="../logos/symbol.png" alt="show logo" />
-					</div>
-					<div>
-						<ul className="d-flex gap-4 align-items-center">
-							<li className="profile-pic">
-								<DropDown photo={user.photos[0]} email={user.email} />
-							</li>
-						</ul>
-					</div>
-				</header>
 				<section className="container d-flex align-items-center justify-content-center py-4">
 					<form
 						onSubmit={createNewBlog}
