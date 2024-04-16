@@ -12,10 +12,7 @@ const UserSchema = new Schema({
 		type: String,
 		required: true,
 	},
-	lastName: {
-		type: String,
-		required: true,
-	},
+	lastName: String,
 	displayName: String,
 	photos: [String],
 	createdAt: {

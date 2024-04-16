@@ -17,6 +17,7 @@ require('./config/googleStrategy')
 const authRouter = require('./routes/auth')
 const { userAuthenticated } = require('./middleware/checkAuth')
 const { uploadMiddleware } = require('./middleware/uploadMiddleware')
+const { nextTick } = require('process')
 
 const app = express()
 connectDB()
@@ -67,8 +68,8 @@ app.post('/new', uploadMiddleware, async (req, res) => {
 	try {
 		const { title, content, description, userId } = req.body
 
-		if (!req.file && !userId && !title && !content) {
-			res.status(400).json({ message: 'Image not uploaded.' })
+		if (!req.file || !userId || !title || !content) {
+			return res.status(400).json({ message: 'Incomplete request.' })
 		}
 
 		const result = await cloudinary.uploader.upload(req.file.path, {
@@ -103,9 +104,24 @@ app.post('/my-post', userAuthenticated, async (req, res) => {
 	try {
 		const { userId } = req.body
 		if (!userId) res.status(403).json({ message: 'valid userId required' })
-		const myPost = await Blog.find({ userId: userId })
+
+		const myPost = await Blog.find({ userId: userId }).populate('userId') // populate the userId to get the author of Blog
+
 		if (myPost?.length) {
 			return res.status(200).json(myPost)
+		}
+		res.sendStatus(404)
+	} catch (error) {
+		res.status(500).json({ message: 'failed to fetch post' })
+	}
+})
+
+app.get('/all', userAuthenticated, async (req, res) => {
+	try {
+		const allPost = await Blog.find().populate('userId')
+		console.log(allPost)
+		if (allPost?.length) {
+			return res.status(200).json(allPost)
 		}
 		res.sendStatus(404)
 	} catch (error) {

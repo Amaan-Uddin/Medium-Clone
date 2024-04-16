@@ -55,7 +55,7 @@ const NewBlog = () => {
 				body: formData,
 			})
 			if (!response.ok) throw Error('Error:Failed to post blog to server')
-			navigate('/u/my-blog', { replace: true })
+			navigate('/u/my-blogs', { replace: true })
 		} catch (error) {
 			console.error(error)
 		}

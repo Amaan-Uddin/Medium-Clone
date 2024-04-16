@@ -1,5 +1,6 @@
 import { useEffect, useContext, useState } from 'react'
 import { UserContext } from '../Context/UserContext'
+import Feed from '../Posts/Feed'
 
 const MyBlog = () => {
 	const { user } = useContext(UserContext)
@@ -18,7 +19,9 @@ const MyBlog = () => {
 						userId: user._id,
 					}),
 				})
+				if (!response.ok) throw new Error('Failed to fetch your post(s) from the server')
 				const data = await response.json()
+				setMyPost(data)
 				console.log(data)
 			}
 			fetchMyPost()
@@ -26,10 +29,6 @@ const MyBlog = () => {
 			console.error(error)
 		}
 	}, [user])
-	return (
-		<main>
-			<section className="container d-flex align-items-center flex-column gap-3"></section>
-		</main>
-	)
+	return <main className="container">{myPost.length ? <Feed posts={myPost} /> : `No article as of now...`}</main>
 }
 export default MyBlog

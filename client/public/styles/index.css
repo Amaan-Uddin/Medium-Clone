@@ -11,6 +11,10 @@ li {
 	list-style: none;
 }
 
+p {
+	margin-bottom: 0;
+}
+
 ul {
 	margin: 0 !important;
 	padding: 0 !important;
@@ -32,7 +36,7 @@ img {
 
 .blog-image {
 	border-radius: 10px;
-	width: 22rem;
+	width: 16.5rem;
 }
 .blog-image > img {
 	border-radius: 10px;
@@ -105,6 +109,10 @@ img {
 .profile-pic {
 	border-radius: 50% 50%;
 	width: 2.4rem;
+}
+
+.blog.profile-pic {
+	width: 1.5rem;
 }
 
 .profile-pic img {

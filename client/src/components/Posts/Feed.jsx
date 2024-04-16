@@ -1,9 +1,9 @@
-import Article from './Article'
-const Feed = ({ articles }) => {
+import Post from './Post'
+const Feed = ({ posts }) => {
 	return (
 		<>
-			{articles.map((article) => (
-				<Article key={article.id} article={article} />
+			{posts.map((post) => (
+				<Post key={post._id} post={post} />
 			))}
 		</>
 	)

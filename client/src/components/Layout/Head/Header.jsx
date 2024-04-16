@@ -3,7 +3,7 @@ import { useContext, useEffect } from 'react'
 import { UserContext } from '../../Context/UserContext'
 import DropDown from '../Utils/DropDown'
 
-const Header = ({ search, setSearch, logo }) => {
+const Header = ({ logo }) => {
 	const { user, setUser } = useContext(UserContext)
 
 	useEffect(() => {

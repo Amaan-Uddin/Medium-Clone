@@ -19,7 +19,7 @@ const DropDown = ({ photo, email }) => {
 			</button>
 			<ul className="dropdown-menu">
 				<li>
-					<Link className="dropdown-item fw-semibold" to={'/'}>
+					<Link className="dropdown-item fw-semibold" to={'/u/my-blogs'}>
 						My Blogs
 					</Link>
 				</li>

@@ -15,7 +15,6 @@ passport.use(
 				// get the returned data from profile
 				let data = profile?._json
 				let user = await User.findOne({ email: data.email })
-
 				if (!user) {
 					// create user, if user does not exist
 					const newUser = await User.create({
@@ -23,7 +22,7 @@ passport.use(
 						googleId: data.id,
 						firstName: data.given_name,
 						lastName: data.family_name,
-						displayName: data.displayName,
+						displayName: `${data.given_name} ${data.family_name}`,
 						photos: profile.photos.map((photo) => photo.value),
 					})
 					return await done(null, newUser)
