@@ -30,6 +30,7 @@ app.use(
 		credentials: true,
 	})
 )
+
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
@@ -119,11 +120,22 @@ app.post('/my-post', userAuthenticated, async (req, res) => {
 app.get('/all', userAuthenticated, async (req, res) => {
 	try {
 		const allPost = await Blog.find().populate('userId')
-		console.log(allPost)
-		if (allPost?.length) {
-			return res.status(200).json(allPost)
+		if (!allPost?.length) return res.sendStatus(404)
+		res.status(200).json(allPost)
+	} catch (error) {
+		res.status(500).json({ message: 'failed to fetch post' })
+	}
+})
+
+app.get('/read-blog', userAuthenticated, async (req, res) => {
+	try {
+		const { id, post } = req.query
+		if (!id || !post) {
+			return res.sendStatus(400)
 		}
-		res.sendStatus(404)
+		const blogPost = await Blog.findOne({ _id: id, slug: post }).populate('userId')
+		if (!blogPost) return res.sendStatus(404)
+		res.status(200).json(blogPost)
 	} catch (error) {
 		res.status(500).json({ message: 'failed to fetch post' })
 	}

@@ -36,10 +36,12 @@ img {
 
 .blog-image {
 	border-radius: 10px;
-	width: 16.5rem;
+	width: 100%;
+	max-width: 18.75rem;
 }
 .blog-image > img {
 	border-radius: 10px;
+	object-fit: cover;
 }
 
 #search {
@@ -142,4 +144,53 @@ img {
 
 .new-blog-inputs:focus {
 	outline: none;
+}
+
+.blog-box,
+.cover-image {
+	max-width: 50rem;
+	width: 100%;
+}
+
+.read-description {
+	color: rgb(89, 89, 89);
+	font-size: 1.3rem;
+	letter-spacing: -0.5px;
+	word-spacing: 1px;
+	font-weight: 400;
+	margin: 15px 0px;
+}
+
+.read-title {
+	letter-spacing: -1.5px;
+	font-weight: 900;
+	font-size: 2.75rem;
+}
+
+.read-author {
+	font-size: 18px;
+	letter-spacing: -0.5px;
+	word-spacing: -1px;
+}
+
+.read-datetime {
+	color: rgb(118, 118, 118);
+}
+
+.read-content > h1,
+.read-content > h2 {
+	margin-bottom: 0.8rem;
+	font-weight: 800;
+	letter-spacing: -1.5px;
+}
+.read-content > h1 {
+	font-size: 2.35rem;
+}
+.read-content > h2 {
+	font-size: 1.75rem;
+}
+.read-content > p {
+	margin-bottom: 1rem;
+	font-family: 'Times New Roman', Times, serif;
+	font-size: 1.4rem;
 }

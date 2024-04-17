@@ -8,6 +8,7 @@ import Signup from './components/Auth/Signup'
 import NewBlog from './components/Body/NewBlog'
 import MyBlog from './components/Body/MyBlog'
 import ProtectedRoute from './components/Auth/ProtectedRoute'
+import ReadBlog from './components/Body/ReadBlog'
 import { UserContextProvider } from './components/Context/UserContext'
 
 function App() {
@@ -35,7 +36,7 @@ function App() {
 			}
 		}
 		fetchAllPosts()
-	}, [])
+	}, [user])
 
 	return (
 		<>
@@ -46,6 +47,7 @@ function App() {
 						<Route path="u" element={<ProtectedRoute />}>
 							<Route path="new-blog" element={<NewBlog />}></Route>
 							<Route path="my-blogs" element={<MyBlog />}></Route>
+							<Route path="read-blog" element={<ReadBlog />}></Route>
 						</Route>
 					</Route>
 					<Route path="signup" element={<Signup />}></Route>
