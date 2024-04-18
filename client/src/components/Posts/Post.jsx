@@ -6,7 +6,7 @@ const Post = ({ post }) => {
 		const newDate = new Date().getTime()
 		const oldDate = new Date(blogDate).getTime()
 		const timeDiff = newDate - oldDate
-		return timeDiff > 24 * 60 * 60 * 1000 // * 7 (multiply by 7 for appliying the changes if the post is older than 1 week)
+		return timeDiff > 24 * 60 * 60 * 1000 * 7 // (multiply by 7 for appliying the changes if the post is older than 1 week)
 	}
 	return (
 		<article className="d-flex gap-4 py-5 border-bottom">

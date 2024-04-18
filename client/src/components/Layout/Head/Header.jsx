@@ -16,17 +16,15 @@ const Header = ({ logo }) => {
 		fetchUser()
 	}, [setUser])
 
-	useEffect(() => {
-		localStorage.setItem('user', JSON.stringify(user))
-	}, [user])
-
 	return (
 		<header className="px-3 border-bottom">
 			<nav className="d-flex justify-content-between align-items-center">
 				<div id="searchbox " className="d-flex align-items-center gap-1">
-					<div className="logo">
-						<img src={logo} alt="logo" />
-					</div>
+					<Link to={'/'}>
+						<div className="logo">
+							<img src={logo} alt="logo" />
+						</div>
+					</Link>
 					{/* <form
 						onSubmit={(e) => {
 							e.preventDefault()
@@ -50,7 +48,9 @@ const Header = ({ logo }) => {
 						{user?.loggedIn === true ? (
 							<>
 								<li className="d-flex align-items-center">
-									<Link to={'/u/new-blog'}>Write</Link>
+									<Link to={'/u/new-blog'} style={{ color: 'black' }}>
+										Write <i className="uil uil-pen"></i>
+									</Link>
 								</li>
 								<li className="profile-pic">
 									<DropDown photo={user.photos[0]} email={user.email} />
@@ -59,10 +59,14 @@ const Header = ({ logo }) => {
 						) : (
 							<>
 								<li>
-									<Link to={'/login'}>Login</Link>
+									<Link to={'/login'} style={{ color: 'black' }}>
+										Login <i className="uil uil-sign-in-alt"></i>
+									</Link>
 								</li>
 								<li>
-									<Link to={'/signup'}>Sign-up</Link>
+									<Link to={'/signup'} style={{ color: 'black' }}>
+										Sign-up <i className="uil uil-signin"></i>
+									</Link>
 								</li>
 							</>
 						)}

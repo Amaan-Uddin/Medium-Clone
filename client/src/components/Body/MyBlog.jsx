@@ -5,10 +5,9 @@ import Feed from '../Posts/Feed'
 const MyBlog = () => {
 	const { user } = useContext(UserContext)
 	const [myPost, setMyPost] = useState([])
-
 	useEffect(() => {
-		try {
-			const fetchMyPost = async () => {
+		const fetchMyPost = async () => {
+			try {
 				const response = await fetch('http://localhost:5000/my-post', {
 					credentials: 'include', // important if you want the api to check the user is authenticated or not
 					method: 'POST',
@@ -23,12 +22,12 @@ const MyBlog = () => {
 				const data = await response.json()
 				setMyPost(data)
 				console.log(data)
+			} catch (error) {
+				console.error(error)
 			}
-			fetchMyPost()
-		} catch (error) {
-			console.error(error)
 		}
+		fetchMyPost()
 	}, [user])
-	return <main className="container">{myPost.length ? <Feed posts={myPost} /> : `No article as of now...`}</main>
+	return <main className="container">{myPost && <Feed posts={myPost} />}</main>
 }
 export default MyBlog

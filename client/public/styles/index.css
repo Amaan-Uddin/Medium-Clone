@@ -31,7 +31,8 @@ img {
 }
 
 .logo {
-	width: 5rem;
+	width: 10rem;
+	padding: 0.75rem 0;
 }
 
 .blog-image {
@@ -193,4 +194,22 @@ img {
 	margin-bottom: 1rem;
 	font-family: 'Times New Roman', Times, serif;
 	font-size: 1.4rem;
+}
+
+.quill-box {
+	width: 100%;
+	max-height: calc(100vh - 18rem);
+	overflow-y: auto;
+}
+
+.loading-box {
+	display: flex;
+	width: 100%;
+	justify-content: center;
+	align-items: center;
+	height: calc(100vh - 5rem);
+}
+
+.loading-box > .spinner-grow {
+	scale: 1.8;
 }

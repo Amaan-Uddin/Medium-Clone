@@ -1,4 +1,4 @@
-const Login = () => {
+const Login = ({ logo }) => {
 	const googleAuth = async (e) => {
 		e.preventDefault()
 		window.open('http://localhost:5000/auth/google', '_self')
@@ -8,11 +8,11 @@ const Login = () => {
 		<main className="login-main">
 			<section className="container box d-flex flex-column align-items-center">
 				<h1 className="auth-title">
-					<img src="LOGO/Logo/01_Black/Full/PNG/CMYK/Medium-Logo-Black-CMYK@1x.png" alt="show logo" />
+					<img src={logo} alt="show logo" />
 				</h1>
 				<div className="container d-flex flex-column align-items-center">
 					<div className="auth-box d-flex flex-column border border-1 py-4 px-5 rounded-3">
-						<h3>Login</h3>
+						<h3 className="fw-bolder">Login</h3>
 						<form className="form-group d-flex flex-column gap-3">
 							<input
 								type="text"

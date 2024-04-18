@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 
 import Layout from './components/Layout/Layout'
 import Home from './components/Body/Home'
@@ -12,7 +12,8 @@ import ReadBlog from './components/Body/ReadBlog'
 import { UserContextProvider } from './components/Context/UserContext'
 
 function App() {
-	const logoPath = '/logos/symbol.png'
+	const location = useLocation()
+	const logoPath = '/logos/full.png'
 
 	const [posts, setPosts] = useState([])
 
@@ -30,12 +31,18 @@ function App() {
 				if (!response.ok) throw new Error('Failed to fetch posts')
 				const data = await response.json()
 				console.log(data)
-				setPosts(data)
+				setTimeout(() => {
+					setPosts(data)
+				}, 1000)
 			} catch (error) {
 				console.error(error)
 			}
 		}
-		fetchAllPosts()
+		if (location.pathname === '/') fetchAllPosts()
+	}, [user, location.pathname])
+
+	useEffect(() => {
+		localStorage.setItem('user', JSON.stringify(user))
 	}, [user])
 
 	return (
@@ -51,7 +58,7 @@ function App() {
 						</Route>
 					</Route>
 					<Route path="signup" element={<Signup />}></Route>
-					<Route path="login" element={<Login />}></Route>
+					<Route path="login" element={<Login logo={logoPath} />}></Route>
 				</Routes>
 			</UserContextProvider>
 		</>

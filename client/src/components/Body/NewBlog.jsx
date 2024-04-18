@@ -1,8 +1,9 @@
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import { useContext, useState, useEffect } from 'react'
+import { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../Context/UserContext'
+import { LoaderBorder } from '../Layout/Utils/Loaders'
 import hljs from 'highlight.js'
 
 const modules = {
@@ -36,31 +37,31 @@ const formats = [
 
 const NewBlog = () => {
 	const { user } = useContext(UserContext)
+	const [btnClicked, setBtnClicked] = useState(false)
 	const navigate = useNavigate()
 	const [title, setTitle] = useState('')
 	const [description, setDescription] = useState('')
 	const [content, setContent] = useState('')
 	const [file, setFile] = useState('')
 
-	useEffect(() => {
-		localStorage.setItem('user', JSON.stringify(user))
-	}, [user])
-
 	async function createNewBlog(e) {
 		e.preventDefault()
+		setBtnClicked(true)
 		const formData = new FormData()
 		formData.set('title', title)
 		formData.set('description', description)
 		formData.set('content', content)
 		formData.set('file', file[0])
 		formData.set('userId', user._id)
-
 		try {
 			const response = await fetch('http://localhost:5000/new', {
 				method: 'POST',
 				body: formData,
 			})
-			if (!response.ok) throw Error('Error:Failed to post blog to server')
+			if (!response.ok) {
+				setBtnClicked(false)
+				throw Error('Error:Failed to post blog to server')
+			}
 			navigate('/u/my-blogs', { replace: true })
 		} catch (error) {
 			console.error(error)
@@ -105,17 +106,28 @@ const NewBlog = () => {
 								setDescription(e.target.value)
 							}}
 						></input>
-						<ReactQuill
-							className="w-100"
-							modules={modules}
-							formats={formats}
-							value={content}
-							onChange={(newVal) => {
-								setContent(newVal)
-							}}
-						/>
-						<button className="btn btn-success rounded-1 py-1 w-100 " type="submit">
-							Publish
+						<div className="quill-box">
+							<ReactQuill
+								className="w-100"
+								modules={modules}
+								formats={formats}
+								value={content}
+								onChange={(newVal) => {
+									setContent(newVal)
+								}}
+							/>
+						</div>
+						<button
+							className="btn btn-success rounded-1 py-1 w-100 py-2"
+							type="submit"
+							style={{ backgroundColor: 'black', fontWeight: '600' }}
+						>
+							{!btnClicked && <>{`Publish`}</>}
+							{btnClicked && (
+								<>
+									<LoaderBorder />
+								</>
+							)}
 						</button>
 					</form>
 				</section>
