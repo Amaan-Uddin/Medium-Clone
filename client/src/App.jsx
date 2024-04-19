@@ -45,6 +45,10 @@ function App() {
 		localStorage.setItem('user', JSON.stringify(user))
 	}, [user])
 
+	useEffect(() => {
+		localStorage.setItem('BlogData', JSON.stringify({ title: '', description: '', content: '', file: '' }))
+	}) // do not add the dependency array as it would lead to the BlogData being persistent throughtout & will not reset the BlogData in the localStorage
+
 	return (
 		<>
 			<UserContextProvider value={{ user, setUser }}>

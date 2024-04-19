@@ -1,6 +1,6 @@
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../Context/UserContext'
 import { LoaderBorder } from '../Layout/Utils/Loaders'
@@ -37,12 +37,30 @@ const formats = [
 
 const NewBlog = () => {
 	const { user } = useContext(UserContext)
-	const [btnClicked, setBtnClicked] = useState(false)
 	const navigate = useNavigate()
-	const [title, setTitle] = useState('')
-	const [description, setDescription] = useState('')
-	const [content, setContent] = useState('')
+	const [btnClicked, setBtnClicked] = useState(false)
+	const [title, setTitle] = useState(() => {
+		const title = localStorage.getItem('BlogData')
+		return title ? JSON.parse(title).title : {}
+	})
+	const [description, setDescription] = useState(() => {
+		const description = localStorage.getItem('BlogData')
+		return description ? JSON.parse(description).description : {}
+	})
+	const [content, setContent] = useState(() => {
+		const content = localStorage.getItem('BlogData')
+		return content ? JSON.parse(content).content : {}
+	})
 	const [file, setFile] = useState('')
+
+	useEffect(() => {
+		const oldData = localStorage.getItem('BlogData')
+		let parsedData = JSON.parse(oldData)
+		if (parsedData) {
+			parsedData = { title, description, content, file }
+			localStorage.setItem('BlogData', JSON.stringify(parsedData))
+		}
+	}, [title, description, content, file])
 
 	async function createNewBlog(e) {
 		e.preventDefault()
