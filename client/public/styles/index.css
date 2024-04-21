@@ -86,7 +86,8 @@ img {
 }
 .blog-title {
 	color: black;
-	font-weight: 800;
+	letter-spacing: -1px;
+	font-weight: 900;
 }
 
 .login-main {
@@ -172,6 +173,7 @@ img {
 	font-size: 18px;
 	letter-spacing: -0.5px;
 	word-spacing: -1px;
+	font-weight: 500;
 }
 
 .read-datetime {
@@ -198,8 +200,17 @@ img {
 
 .quill-box {
 	width: 100%;
-	max-height: calc(100vh - 18rem);
-	overflow-y: auto;
+}
+
+.quill {
+	position: relative;
+}
+
+.ql-toolbar {
+	position: sticky;
+	top: 0; /* Stick to the top of the window */
+	z-index: 1; /* Ensure the toolbar stays above other content */
+	background-color: #fff; /* Optional: Set background color */
 }
 
 .loading-box {

@@ -76,6 +76,7 @@ app.post('/new', uploadMiddleware, async (req, res) => {
 		const result = await cloudinary.uploader.upload(req.file.path, {
 			folder: 'mern-blog',
 			resource_type: 'image',
+			type: 'upload',
 		})
 
 		const newBlog = await Blog.create({
@@ -106,7 +107,7 @@ app.post('/my-post', userAuthenticated, async (req, res) => {
 		const { userId } = req.body
 		if (!userId) res.status(403).json({ message: 'valid userId required' })
 
-		const myPost = await Blog.find({ userId: userId }).populate('userId') // populate the userId to get the author of Blog
+		const myPost = await Blog.find({ userId: userId }).populate('userId').sort({ createdAt: -1 }) // populate the userId to get the author of Blog
 
 		if (myPost?.length) {
 			return res.status(200).json(myPost)
@@ -119,7 +120,7 @@ app.post('/my-post', userAuthenticated, async (req, res) => {
 
 app.get('/all', userAuthenticated, async (req, res) => {
 	try {
-		const allPost = await Blog.find().populate('userId')
+		const allPost = await Blog.find().populate('userId').sort({ createdAt: -1 })
 		if (!allPost?.length) return res.sendStatus(404)
 		res.status(200).json(allPost)
 	} catch (error) {
@@ -138,6 +139,27 @@ app.get('/read-blog', userAuthenticated, async (req, res) => {
 		res.status(200).json(blogPost)
 	} catch (error) {
 		res.status(500).json({ message: 'failed to fetch post' })
+	}
+})
+
+app.delete('/delete', userAuthenticated, async (req, res) => {
+	try {
+		const { id } = req.query
+		const { user } = req.body
+
+		if (!id || !user) return res.sendStatus(400)
+
+		const blogPost = await Blog.findOne({ _id: id }).populate('userId')
+		if (!blogPost) return res.sendStatus(404)
+
+		if (user !== blogPost.userId.id) return res.sendStatus(401)
+
+		await cloudinary.uploader.destroy(blogPost.image.public_id, { resource_type: 'image', type: 'upload' })
+		await Blog.deleteOne({ _id: blogPost.id })
+
+		res.status(200).json({ message: 'Blog successfully deleted' })
+	} catch (error) {
+		console.error(error)
 	}
 })
 
