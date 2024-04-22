@@ -10,6 +10,7 @@ import MyBlog from './components/Body/MyBlog'
 import ProtectedRoute from './components/Auth/ProtectedRoute'
 import ReadBlog from './components/Body/ReadBlog'
 import { UserContextProvider } from './components/Context/UserContext'
+import EditBlog from './components/Body/EditBlog'
 
 function App() {
 	const location = useLocation()
@@ -59,6 +60,7 @@ function App() {
 							<Route path="new-blog" element={<NewBlog />}></Route>
 							<Route path="my-blogs" element={<MyBlog />}></Route>
 							<Route path="read-blog" element={<ReadBlog />}></Route>
+							<Route path="edit" element={<EditBlog />}></Route>
 						</Route>
 					</Route>
 					<Route path="signup" element={<Signup />}></Route>

@@ -10,6 +10,10 @@ const ReadBlog = () => {
 	const { user } = useContext(UserContext)
 	const [blog, setBlog] = useState()
 
+	const queryParams = new URLSearchParams(location.search)
+	const id = queryParams.get('id')
+	const post = queryParams.get('post')
+
 	function hourCheck(blogDate) {
 		const newDate = new Date().getTime()
 		const oldDate = new Date(blogDate).getTime()
@@ -17,11 +21,31 @@ const ReadBlog = () => {
 		return timeDiff > 24 * 60 * 60 * 1000 * 7 // (multiply by 7 for appliying the changes if the post is older than 1 week)
 	}
 
+	function handleEdit(e) {
+		e.preventDefault()
+		// const currentData = JSON.stringify({
+		// 	title: blog.title,
+		// 	description: blog.description,
+		// 	content: blog.content,
+		// 	file: blog.file,
+		// })
+		// localStorage.setItem('BlogData', currentData)
+		navigate(`/u/edit?id=${id}&post=${post}`, {
+			state: {
+				edit: true,
+				BlogData: {
+					title: blog.title,
+					description: blog.description,
+					content: blog.content,
+					file: blog.image.secure_url,
+					id: blog.userId._id,
+				},
+			},
+		})
+	}
 	async function deletePost(e) {
 		e.preventDefault()
 		document.querySelector('.modal').classList.remove('show')
-		const queryParams = new URLSearchParams(location.search)
-		const id = queryParams.get('id')
 		if (user._id === blog.userId._id) {
 			try {
 				const response = await fetch(`http://localhost:5000/delete?id=${id}`, {
@@ -44,9 +68,6 @@ const ReadBlog = () => {
 	}
 
 	useEffect(() => {
-		const queryParams = new URLSearchParams(location.search)
-		const id = queryParams.get('id')
-		const post = queryParams.get('post')
 		const fetchBlogPost = async () => {
 			try {
 				const response = await fetch(`http://localhost:5000/read-blog?id=${id}&post=${post}`, {
@@ -107,6 +128,7 @@ const ReadBlog = () => {
 									{user._id === blog.userId._id ? (
 										<>
 											<button
+												onClick={handleEdit}
 												className="text-black py-1 border-0"
 												style={{
 													fontSize: '1.5rem',
@@ -114,7 +136,7 @@ const ReadBlog = () => {
 													fontWeight: '500',
 												}}
 											>
-												<span style={{ fontSize: '1.25rem' }}>Edit</span>{' '}
+												<span style={{ fontSize: '1.1rem' }}>Edit</span>{' '}
 												<i className="uil uil-edit"></i>
 											</button>
 											<button

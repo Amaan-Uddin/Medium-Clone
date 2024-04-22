@@ -17,7 +17,6 @@ require('./config/googleStrategy')
 const authRouter = require('./routes/auth')
 const { userAuthenticated } = require('./middleware/checkAuth')
 const { uploadMiddleware } = require('./middleware/uploadMiddleware')
-const { nextTick } = require('process')
 
 const app = express()
 connectDB()
@@ -78,7 +77,6 @@ app.post('/new', uploadMiddleware, async (req, res) => {
 			resource_type: 'image',
 			type: 'upload',
 		})
-
 		const newBlog = await Blog.create({
 			title,
 			content,
@@ -94,7 +92,6 @@ app.post('/new', uploadMiddleware, async (req, res) => {
 		})
 
 		const unlink_res = await fsPromises.unlink(req.file.path)
-		console.log(unlink_res)
 		res.status(200).json(newBlog)
 	} catch (error) {
 		console.error(error)
@@ -161,6 +158,14 @@ app.delete('/delete', userAuthenticated, async (req, res) => {
 	} catch (error) {
 		console.error(error)
 	}
+})
+
+app.put('/edit', uploadMiddleware, async (req, res) => {
+	try {
+		const { title, description, content } = req.body
+		console.log(title, description)
+		res.send({ message: 'hello' })
+	} catch (error) {}
 })
 
 app.use('/auth', authRouter)

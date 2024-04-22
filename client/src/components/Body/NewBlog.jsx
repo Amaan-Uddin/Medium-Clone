@@ -35,32 +35,62 @@ const formats = [
 	'code-block',
 ]
 
-const NewBlog = () => {
+const NewBlog = ({ blogData, canEdit }) => {
 	const { user } = useContext(UserContext)
 	const navigate = useNavigate()
+
+	console.log(blogData)
+
 	const [btnClicked, setBtnClicked] = useState(false)
 	const [title, setTitle] = useState(() => {
+		if (blogData) {
+			return blogData.title
+		}
 		const title = localStorage.getItem('BlogData')
 		return title ? JSON.parse(title).title : {}
 	})
 	const [description, setDescription] = useState(() => {
+		if (blogData) {
+			return blogData.description
+		}
 		const description = localStorage.getItem('BlogData')
 		return description ? JSON.parse(description).description : {}
 	})
 	const [content, setContent] = useState(() => {
+		if (blogData) {
+			return blogData.content
+		}
 		const content = localStorage.getItem('BlogData')
 		return content ? JSON.parse(content).content : {}
 	})
 	const [file, setFile] = useState('')
 
 	useEffect(() => {
-		const oldData = localStorage.getItem('BlogData')
-		let parsedData = JSON.parse(oldData)
-		if (parsedData) {
-			parsedData = { title, description, content, file }
-			localStorage.setItem('BlogData', JSON.stringify(parsedData))
+		if (!canEdit) {
+			const oldData = localStorage.getItem('BlogData')
+			let parsedData = JSON.parse(oldData)
+			if (parsedData) {
+				parsedData = { title, description, content, file }
+				localStorage.setItem('BlogData', JSON.stringify(parsedData))
+			}
 		}
-	}, [title, description, content, file])
+	}, [canEdit, title, description, content, file])
+
+	function previewImage(e) {
+		setFile(e.target.files)
+		const image = e.target.files[0]
+		console.log(image)
+		if (image) {
+			const reader = new FileReader()
+			reader.onload = function (e) {
+				const img = document.createElement('img')
+				img.src = e.target.result
+				document.getElementById('previewImage').innerHTML = '' // Clear previous image
+				document.getElementById('previewImage').appendChild(img)
+			}
+			reader.readAsDataURL(image)
+		}
+	}
 
 	async function createNewBlog(e) {
 		e.preventDefault()
@@ -71,9 +101,18 @@ const NewBlog = () => {
 		formData.set('content', content)
 		formData.set('file', file[0])
 		formData.set('userId', user._id)
+
 		try {
-			const response = await fetch('http://localhost:5000/new', {
-				method: 'POST',
+			const queryParams = new URLSearchParams(location.search)
+			const id = queryParams.get('id')
+			const post = queryParams.get('post')
+
+			const url = canEdit ? `http://localhost:5000/edit?id=${id}&post=${post}` : 'http://localhost:5000/new'
+			const method = canEdit ? 'PUT' : 'POST'
+
+			const response = await fetch(url, {
+				credentials: 'include',
+				method: method,
 				body: formData,
 			})
 			if (!response.ok) {
@@ -94,13 +133,15 @@ const NewBlog = () => {
 						onSubmit={createNewBlog}
 						className="d-flex flex-column align-items-center new-blog-form gap-3"
 					>
+						<div id="previewImage" style={{ width: '20rem' }} className="d-flex align-self-start">
+							{canEdit ? <img src={canEdit ? blogData?.file : ''} /> : ''}
+						</div>
 						<input
 							type="file"
 							id="file"
-							className="new-blog-inputs"
-							onChange={(e) => {
-								setFile(e.target.files)
-							}}
+							className="new-blog-inputs "
+							onChange={previewImage}
+							required
 						></input>
 						<input
 							type="text"
