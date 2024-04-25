@@ -23,13 +23,6 @@ const ReadBlog = () => {
 
 	function handleEdit(e) {
 		e.preventDefault()
-		// const currentData = JSON.stringify({
-		// 	title: blog.title,
-		// 	description: blog.description,
-		// 	content: blog.content,
-		// 	file: blog.file,
-		// })
-		// localStorage.setItem('BlogData', currentData)
 		navigate(`/u/edit?id=${id}&post=${post}`, {
 			state: {
 				edit: true,
@@ -38,6 +31,7 @@ const ReadBlog = () => {
 					description: blog.description,
 					content: blog.content,
 					file: blog.image.secure_url,
+					originalname: blog.image.originalname,
 					id: blog.userId._id,
 				},
 			},
@@ -45,7 +39,6 @@ const ReadBlog = () => {
 	}
 	async function deletePost(e) {
 		e.preventDefault()
-		document.querySelector('.modal').classList.remove('show')
 		if (user._id === blog.userId._id) {
 			try {
 				const response = await fetch(`http://localhost:5000/delete?id=${id}`, {
@@ -60,6 +53,7 @@ const ReadBlog = () => {
 				const data = await response.json()
 				console.log(data)
 				navigate('/u/my-blogs', { replace: true })
+				document.querySelector('.modal-backdrop').remove()
 				window.location.reload()
 			} catch (error) {
 				console.error(error)
@@ -133,7 +127,7 @@ const ReadBlog = () => {
 												style={{
 													fontSize: '1.5rem',
 													backgroundColor: 'transparent',
-													fontWeight: '500',
+													fontWeight: '400',
 												}}
 											>
 												<span style={{ fontSize: '1.1rem' }}>Edit</span>{' '}
@@ -153,6 +147,15 @@ const ReadBlog = () => {
 										''
 									)}
 								</div>
+							</div>
+						</div>
+						<div className="d-flex border-top border-bottom py-2 align-items-center justify-content-between blog-stat-box">
+							<div>
+								<i class="uil uil-thumbs-up"></i>
+								<i class="uil uil-comment"></i>
+							</div>
+							<div>
+								<i className="uil uil-bookmark"></i>
 							</div>
 						</div>
 						<div className="cover-image mt-4 d-flex justify-content-center">

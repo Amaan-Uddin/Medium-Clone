@@ -39,8 +39,6 @@ const NewBlog = ({ blogData, canEdit }) => {
 	const { user } = useContext(UserContext)
 	const navigate = useNavigate()
 
-	console.log(blogData)
-
 	const [btnClicked, setBtnClicked] = useState(false)
 	const [title, setTitle] = useState(() => {
 		if (blogData) {
@@ -79,7 +77,6 @@ const NewBlog = ({ blogData, canEdit }) => {
 	function previewImage(e) {
 		setFile(e.target.files)
 		const image = e.target.files[0]
-		console.log(image)
 		if (image) {
 			const reader = new FileReader()
 			reader.onload = function (e) {
@@ -99,8 +96,8 @@ const NewBlog = ({ blogData, canEdit }) => {
 		formData.set('title', title)
 		formData.set('description', description)
 		formData.set('content', content)
-		formData.set('file', file[0])
 		formData.set('userId', user._id)
+		if (!canEdit) formData.set('file', file[0])
 
 		try {
 			const queryParams = new URLSearchParams(location.search)
@@ -109,11 +106,14 @@ const NewBlog = ({ blogData, canEdit }) => {
 
 			const url = canEdit ? `http://localhost:5000/edit?id=${id}&post=${post}` : 'http://localhost:5000/new'
 			const method = canEdit ? 'PUT' : 'POST'
+			const body = canEdit ? new URLSearchParams(formData).toString() : formData
+			const headers = canEdit ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {} // set no 'Content-type' : 'multipart/form-data' since we will have to set boundary
 
 			const response = await fetch(url, {
 				credentials: 'include',
 				method: method,
-				body: formData,
+				body: body,
+				headers: headers,
 			})
 			if (!response.ok) {
 				setBtnClicked(false)
@@ -133,16 +133,19 @@ const NewBlog = ({ blogData, canEdit }) => {
 						onSubmit={createNewBlog}
 						className="d-flex flex-column align-items-center new-blog-form gap-3"
 					>
-						<div id="previewImage" style={{ width: '20rem' }} className="d-flex align-self-start">
-							{canEdit ? <img src={canEdit ? blogData?.file : ''} /> : ''}
+						<div
+							id="previewImage"
+							className="d-flex align-self-start align-items-center justify-content-center"
+						>
+							{canEdit ? (
+								<img src={canEdit ? blogData?.file : ''} />
+							) : (
+								'Upload a cover page for your blog'
+							)}
 						</div>
-						<input
-							type="file"
-							id="file"
-							className="new-blog-inputs "
-							onChange={previewImage}
-							required
-						></input>
+						{!canEdit && (
+							<input type="file" id="file" className="new-blog-inputs " onChange={previewImage}></input>
+						)}
 						<input
 							type="text"
 							name="title"

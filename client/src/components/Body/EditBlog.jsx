@@ -1,6 +1,6 @@
 import { useEffect, useContext, useState } from 'react'
 import NewBlog from './NewBlog'
-import { Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom'
 import { UserContext } from '../Context/UserContext'
 
 const EditBlog = () => {
@@ -12,9 +12,6 @@ const EditBlog = () => {
 	})
 	const [blogData, setBlogData] = useState(location.state?.BlogData)
 
-	// useEffect(() => {
-	// 	localStorage.setItem('EditData', JSON.stringify({ title: '', description: '', content: '', file: '' }))
-	// })
 	useEffect(() => {
 		console.log(canEdit)
 		console.log(blogData)

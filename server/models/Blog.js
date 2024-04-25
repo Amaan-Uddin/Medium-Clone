@@ -30,6 +30,7 @@ const BlogSchema = new Schema({
 			type: String,
 			required: true,
 		},
+		originalname: String,
 	},
 	slug: {
 		type: String,
@@ -56,6 +57,17 @@ BlogSchema.pre('validate', function (next) {
 	}
 	if (this.content) {
 		this.content = DOMpurify.sanitize(this.content)
+	}
+	next()
+})
+
+BlogSchema.pre('updateOne', async function (next) {
+	const update = this.getUpdate()
+	if (update.title) {
+		update.slug = slugify(update.title, { lower: true, strict: true })
+	}
+	if (update.content) {
+		update.content = DOMpurify.sanitize(update.content)
 	}
 	next()
 })

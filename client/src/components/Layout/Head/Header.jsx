@@ -53,7 +53,7 @@ const Header = ({ logo }) => {
 									</Link>
 								</li>
 								<li className="profile-pic">
-									<DropDown photo={user.photos[0]} email={user.email} />
+									<DropDown photo={user.photos[0]} email={user.email} username={user.displayName} />
 								</li>
 							</>
 						) : (

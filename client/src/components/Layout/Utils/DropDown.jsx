@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { useContext } from 'react'
 import { UserContext } from '../../Context/UserContext'
 
-const DropDown = ({ photo, email }) => {
+const DropDown = ({ photo, email, username }) => {
 	const { setUser } = useContext(UserContext)
 
 	const logout = async () => {
@@ -17,20 +17,28 @@ const DropDown = ({ photo, email }) => {
 			<button className="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
 				<img src={photo} alt="show profile" />
 			</button>
-			<ul className="dropdown-menu">
-				<li>
-					<Link className="dropdown-item fw-semibold" to={'/u/my-blogs'}>
-						My Blogs
-					</Link>
+			<ul className="dropdown-menu px-3 py-4">
+				<li className="d-flex align-items-center pb-2">
+					<div className="profile-pic" style={{ width: '2rem', height: '2rem' }}>
+						<Link>
+							<img src={photo} alt="" />
+						</Link>
+					</div>
+					<div>
+						<p to={''} className=" fw-semibold  ">
+							{username}
+						</p>
+						<p className=" text-secondary disabled">{email}</p>
+					</div>
 				</li>
 				<li>
-					<Link className="dropdown-item fw-semibold disabled" to={'/'}>
-						{email}
+					<Link className="dropdown-item fw-semibold" to={'/u/my-blogs'}>
+						<i className="uil uil-layers"></i> My Blogs
 					</Link>
 				</li>
 				<li>
 					<Link className="dropdown-item text-danger fw-semibold" onClick={logout}>
-						Logout
+						<i className="uil uil-signout"></i> Logout
 					</Link>
 				</li>
 			</ul>

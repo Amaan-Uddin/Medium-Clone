@@ -38,7 +38,8 @@ img {
 .blog-image {
 	border-radius: 10px;
 	width: 100%;
-	max-width: 18.75rem;
+	max-width: 16.75rem;
+	height: 11.5rem;
 }
 .blog-image > img {
 	border-radius: 10px;
@@ -223,4 +224,18 @@ img {
 
 .loading-box > .spinner-grow {
 	scale: 1.8;
+}
+
+#previewImage {
+	height: 15rem;
+	width: 24rem;
+	border: 2px dashed rgb(117, 117, 117);
+	background-color: #ededed;
+	border-radius: 0.5rem;
+}
+#previewImage > img {
+	object-fit: cover;
+	border-radius: 0.5rem;
+	width: calc(100% + 5px);
+	height: calc(100% + 5px);
 }

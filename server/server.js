@@ -87,8 +87,8 @@ app.post('/new', uploadMiddleware, async (req, res) => {
 				format: result.format,
 				url: result.url,
 				secure_url: result.secure_url,
+				originalname: req.file.originalname,
 			},
-			userId,
 		})
 
 		const unlink_res = await fsPromises.unlink(req.file.path)
@@ -111,7 +111,7 @@ app.post('/my-post', userAuthenticated, async (req, res) => {
 		}
 		res.sendStatus(404)
 	} catch (error) {
-		res.status(500).json({ message: 'failed to fetch post' })
+		res.status(500).json({ message: 'server failed to fetch post' })
 	}
 })
 
@@ -121,7 +121,7 @@ app.get('/all', userAuthenticated, async (req, res) => {
 		if (!allPost?.length) return res.sendStatus(404)
 		res.status(200).json(allPost)
 	} catch (error) {
-		res.status(500).json({ message: 'failed to fetch post' })
+		res.status(500).json({ message: 'server failed to fetch post' })
 	}
 })
 
@@ -135,7 +135,8 @@ app.get('/read-blog', userAuthenticated, async (req, res) => {
 		if (!blogPost) return res.sendStatus(404)
 		res.status(200).json(blogPost)
 	} catch (error) {
-		res.status(500).json({ message: 'failed to fetch post' })
+		console.error(error)
+		res.status(500).json({ message: 'server failed to fetch post' })
 	}
 })
 
@@ -157,15 +158,27 @@ app.delete('/delete', userAuthenticated, async (req, res) => {
 		res.status(200).json({ message: 'Blog successfully deleted' })
 	} catch (error) {
 		console.error(error)
+		res.status(500).json({ message: 'server failed to delete post' })
 	}
 })
 
-app.put('/edit', uploadMiddleware, async (req, res) => {
+app.put('/edit', async (req, res) => {
 	try {
-		const { title, description, content } = req.body
-		console.log(title, description)
-		res.send({ message: 'hello' })
-	} catch (error) {}
+		const { title, description, content, userId } = req.body
+		const { id, post } = req.query
+		console.log(title, description, content, userId)
+		if (!userId || !title || !content) return res.sendStatus(403)
+		if (!id || !post) return res.sendStatus(400)
+		const updatedBlog = await Blog.updateOne(
+			{ _id: id, slug: post },
+			{ title: title, description: description, content: content, userId: userId }
+		)
+		if (!updatedBlog.modifiedCount) throw new Error('no update/modification')
+		res.status(200).json({ message: 'successfully updated blog' })
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ message: 'server failed to update post' })
+	}
 })
 
 app.use('/auth', authRouter)
