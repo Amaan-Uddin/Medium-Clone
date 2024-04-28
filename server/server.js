@@ -12,6 +12,7 @@ const path = require('path')
 const fsPromises = require('fs').promises
 const cloudinary = require('./config/cloudinaryConfig')
 const Blog = require('./models/Blog')
+const Bookmark = require('./models/Bookmark')
 require('./config/googleStrategy')
 
 const authRouter = require('./routes/auth')
@@ -159,6 +160,46 @@ app.delete('/delete', userAuthenticated, async (req, res) => {
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ message: 'server failed to delete post' })
+	}
+})
+
+app.post('/check-bookmark', userAuthenticated, async (req, res) => {
+	try {
+		const { id } = req.query
+		const { userId } = req.body
+		if (!id || !userId) {
+			return res.sendStatus(400)
+		}
+		const bookmark = await Bookmark.findOne({ userId: userId })
+		if (!bookmark) throw new Error('Error: server issue')
+		if (bookmark?.bookmark.length) {
+			const result = bookmark.bookmark.includes(id)
+			return res.status(200).json(result)
+		}
+		res.status(204).json(false)
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ message: 'server failed to check bookmark' })
+	}
+})
+app.post('/bookmark', userAuthenticated, async (req, res) => {
+	try {
+		const { id } = req.query
+		const { userId } = req.body
+
+		if (!id || !userId) {
+			return res.sendStatus(400)
+		}
+		const bookmark = await Bookmark.findOneAndUpdate(
+			{ userId: userId },
+			{ $addToSet: { bookmark: id } },
+			{ new: true }
+		)
+		console.log(bookmark)
+		res.status(200).json({ message: 'successfully added to bookmark' })
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ message: 'server failed to bookmark post' })
 	}
 })
 

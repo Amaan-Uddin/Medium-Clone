@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const passport = require('passport')
+const Bookmark = require('../models/Bookmark')
 
 router.get('/google', passport.authenticate('google', { scope: ['email', 'profile'] }))
 
@@ -10,9 +11,11 @@ router.get(
 		failureRedirect: '/',
 		failureMessage: true,
 	}),
-	(req, res) => {
+	async (req, res) => {
 		console.log(req.user)
-		// res.redirect('/')
+		await Bookmark.create({
+			userId: req.user._id,
+		})
 		res.redirect(`http://localhost:5173/`)
 	}
 )
