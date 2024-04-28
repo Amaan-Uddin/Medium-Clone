@@ -9,6 +9,7 @@ const ReadBlog = () => {
 	const navigate = useNavigate()
 	const { user } = useContext(UserContext)
 	const [blog, setBlog] = useState()
+	const [bookmark, setBookmark] = useState()
 
 	const queryParams = new URLSearchParams(location.search)
 	const id = queryParams.get('id')
@@ -18,7 +19,25 @@ const ReadBlog = () => {
 		const newDate = new Date().getTime()
 		const oldDate = new Date(blogDate).getTime()
 		const timeDiff = newDate - oldDate
-		return timeDiff > 24 * 60 * 60 * 1000 * 7 // (multiply by 7 for appliying the changes if the post is older than 1 week)
+		return timeDiff > 24 * 60 * 60 * 1000 * 30 * 12 // (multiply by 7 for appliying the changes if the post is older than 1 week)
+	}
+
+	async function addToBookmark(e) {
+		e.preventDefault()
+		try {
+			const response = await fetch(`http://localhost:5000/bookmark?id=${id}`, {
+				credentials: 'include',
+				method: 'POST',
+				body: JSON.stringify({ userId: user._id }),
+				headers: { 'Content-type': 'application/json' },
+			})
+			if (!response.ok) throw new Error('Error: Failed to update bookmark')
+			const data = await response.json()
+			console.log(data)
+			checkBookmark()
+		} catch (error) {
+			console.error(error)
+		}
 	}
 
 	function handleEdit(e) {
@@ -49,7 +68,7 @@ const ReadBlog = () => {
 					},
 					body: JSON.stringify({ user: user._id }),
 				})
-				if (!response.ok) throw new Error('Failed to delete post')
+				if (!response.ok) throw new Error('Error: Failed to delete post')
 				const data = await response.json()
 				console.log(data)
 				navigate('/u/my-blogs', { replace: true })
@@ -61,13 +80,30 @@ const ReadBlog = () => {
 		}
 	}
 
+	async function checkBookmark() {
+		try {
+			const response = await fetch(`http://localhost:5000/check-bookmark?id=${id}`, {
+				credentials: 'include',
+				method: 'POST',
+				body: JSON.stringify({ userId: user._id }),
+				headers: {
+					'Content-type': 'application/json',
+				},
+			})
+			if (!response.ok) throw new Error('Failed to fetch bookmark')
+			const data = await response.json()
+			setBookmark(data)
+		} catch (error) {
+			console.error(error)
+		}
+	}
 	useEffect(() => {
 		const fetchBlogPost = async () => {
 			try {
 				const response = await fetch(`http://localhost:5000/read-blog?id=${id}&post=${post}`, {
 					credentials: 'include',
 				})
-				if (!response.ok) throw new Error('Failed to fetch post')
+				if (!response.ok) throw new Error('Error: Failed to fetch post')
 				const data = await response.json()
 				console.log(data)
 				setBlog(data)
@@ -75,7 +111,9 @@ const ReadBlog = () => {
 				console.error(error)
 			}
 		}
+
 		fetchBlogPost()
+		checkBookmark()
 	}, [])
 
 	return (
@@ -149,13 +187,26 @@ const ReadBlog = () => {
 								</div>
 							</div>
 						</div>
-						<div className="d-flex border-top border-bottom py-2 align-items-center justify-content-between blog-stat-box">
-							<div>
-								<i class="uil uil-thumbs-up"></i>
-								<i class="uil uil-comment"></i>
+						<div
+							className="d-flex border-top border-bottom align-items-center justify-content-between blog-stat-box"
+							style={{ fontSize: '1.5rem' }}
+						>
+							<div className="d-flex gap-3">
+								<i className="uil uil-thumbs-up">
+									<span style={{ fontSize: '1rem' }}>123</span>
+								</i>
+								<i className="uil uil-comment">
+									<span style={{ fontSize: '1rem' }}>333</span>
+								</i>
 							</div>
 							<div>
-								<i className="uil uil-bookmark"></i>
+								<button
+									onClick={addToBookmark}
+									className=" btn  border-0 bg-transparent "
+									style={{ fontSize: '1.5rem', color: bookmark ? 'rgb(13 110 253)' : 'black' }}
+								>
+									<i className="uil uil-bookmark"></i>
+								</button>
 							</div>
 						</div>
 						<div className="cover-image mt-4 d-flex justify-content-center">
