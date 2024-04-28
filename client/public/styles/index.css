@@ -239,3 +239,8 @@ img {
 	width: calc(100% + 5px);
 	height: calc(100% + 5px);
 }
+
+.dropdown-item:focus {
+	background-color: #f8f9fa;
+	color: black;
+}

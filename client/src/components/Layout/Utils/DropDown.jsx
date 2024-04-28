@@ -18,7 +18,7 @@ const DropDown = ({ photo, email, username }) => {
 				<img src={photo} alt="show profile" />
 			</button>
 			<ul className="dropdown-menu px-3 py-4">
-				<li className="d-flex align-items-center pb-2">
+				<li className="d-flex align-items-center pb-2 gap-3">
 					<div className="profile-pic" style={{ width: '2rem', height: '2rem' }}>
 						<Link>
 							<img src={photo} alt="" />
@@ -32,12 +32,17 @@ const DropDown = ({ photo, email, username }) => {
 					</div>
 				</li>
 				<li>
-					<Link className="dropdown-item fw-semibold" to={'/u/my-blogs'}>
+					<Link className="dropdown-item fw-semibold " to={'/u/my-blogs'}>
 						<i className="uil uil-layers"></i> My Blogs
 					</Link>
 				</li>
 				<li>
-					<Link className="dropdown-item text-danger fw-semibold" onClick={logout}>
+					<Link className="dropdown-item fw-semibold" to={'/u/bookmarks'}>
+						<i className="uil uil-bookmark"></i> Bookmarks
+					</Link>
+				</li>
+				<li>
+					<Link className="dropdown-item text-danger fw-semibold" onClick={logout} to={'/'}>
 						<i className="uil uil-signout"></i> Logout
 					</Link>
 				</li>

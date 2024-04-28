@@ -28,7 +28,7 @@ const ReadBlog = () => {
 			const response = await fetch(`http://localhost:5000/bookmark?id=${id}`, {
 				credentials: 'include',
 				method: 'POST',
-				body: JSON.stringify({ userId: user._id }),
+				body: JSON.stringify({ userId: user._id, isBookmarked: bookmark }),
 				headers: { 'Content-type': 'application/json' },
 			})
 			if (!response.ok) throw new Error('Error: Failed to update bookmark')
@@ -93,6 +93,7 @@ const ReadBlog = () => {
 			if (!response.ok) throw new Error('Failed to fetch bookmark')
 			const data = await response.json()
 			setBookmark(data)
+			console.log(bookmark)
 		} catch (error) {
 			console.error(error)
 		}
@@ -202,7 +203,8 @@ const ReadBlog = () => {
 							<div>
 								<button
 									onClick={addToBookmark}
-									className=" btn  border-0 bg-transparent "
+									type="button"
+									className=" btn  border-0 bg-transparent  "
 									style={{ fontSize: '1.5rem', color: bookmark ? 'rgb(13 110 253)' : 'black' }}
 								>
 									<i className="uil uil-bookmark"></i>

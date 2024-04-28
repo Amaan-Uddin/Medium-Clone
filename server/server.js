@@ -176,7 +176,7 @@ app.post('/check-bookmark', userAuthenticated, async (req, res) => {
 			const result = bookmark.bookmark.includes(id)
 			return res.status(200).json(result)
 		}
-		res.status(204).json(false)
+		res.status(200).json(false)
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ message: 'server failed to check bookmark' })
@@ -185,18 +185,31 @@ app.post('/check-bookmark', userAuthenticated, async (req, res) => {
 app.post('/bookmark', userAuthenticated, async (req, res) => {
 	try {
 		const { id } = req.query
-		const { userId } = req.body
+		const { userId, isBookmarked } = req.body
+
+		console.log(req.body)
 
 		if (!id || !userId) {
 			return res.sendStatus(400)
 		}
-		const bookmark = await Bookmark.findOneAndUpdate(
-			{ userId: userId },
-			{ $addToSet: { bookmark: id } },
-			{ new: true }
-		)
-		console.log(bookmark)
-		res.status(200).json({ message: 'successfully added to bookmark' })
+
+		if (isBookmarked) {
+			const bookmark = await Bookmark.findOneAndUpdate(
+				{ userId: userId },
+				{ $pull: { bookmark: id } },
+				{ new: true }
+			)
+			console.log(bookmark)
+			return res.status(200).json({ message: 'successfully removed bookmark' })
+		} else {
+			const bookmark = await Bookmark.findOneAndUpdate(
+				{ userId: userId },
+				{ $addToSet: { bookmark: id } },
+				{ new: true }
+			)
+			console.log(bookmark)
+			return res.status(200).json({ message: 'successfully added to bookmark' })
+		}
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ message: 'server failed to bookmark post' })
