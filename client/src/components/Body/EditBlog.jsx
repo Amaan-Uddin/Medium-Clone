@@ -1,4 +1,4 @@
-import { useEffect, useContext, useState } from 'react'
+import { useEffect, useContext } from 'react'
 import NewBlog from './NewBlog'
 import { Navigate, useLocation } from 'react-router-dom'
 import { UserContext } from '../Context/UserContext'
@@ -6,11 +6,9 @@ import { UserContext } from '../Context/UserContext'
 const EditBlog = () => {
 	const location = useLocation()
 	const { user } = useContext(UserContext)
-	const [canEdit, setCanEdit] = useState(() => {
-		const canEdit = location.state?.edit
-		return canEdit ? canEdit : false
-	})
-	const [blogData, setBlogData] = useState(location.state?.BlogData)
+
+	const canEdit = location.state?.edit || false
+	const blogData = location.state?.BlogData
 
 	useEffect(() => {
 		console.log(canEdit)
@@ -19,7 +17,7 @@ const EditBlog = () => {
 
 	return (
 		<>
-			{blogData?.id === user._id ? (
+			{blogData?.userId === user._id ? (
 				<NewBlog blogData={blogData} canEdit={canEdit} />
 			) : (
 				<Navigate to={'/'} replace state={{ from: location }} />

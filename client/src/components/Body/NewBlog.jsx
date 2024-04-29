@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../Context/UserContext'
 import { LoaderBorder } from '../Layout/Utils/Loaders'
 import hljs from 'highlight.js'
+import { previewImage } from '../../../public/scripts/utilities'
 
 const modules = {
 	syntax: {
@@ -40,6 +41,7 @@ const NewBlog = ({ blogData, canEdit }) => {
 	const navigate = useNavigate()
 
 	const [btnClicked, setBtnClicked] = useState(false)
+
 	const [title, setTitle] = useState(() => {
 		if (blogData) {
 			return blogData.title
@@ -74,21 +76,6 @@ const NewBlog = ({ blogData, canEdit }) => {
 		}
 	}, [canEdit, title, description, content, file])
 
-	function previewImage(e) {
-		setFile(e.target.files)
-		const image = e.target.files[0]
-		if (image) {
-			const reader = new FileReader()
-			reader.onload = function (e) {
-				const img = document.createElement('img')
-				img.src = e.target.result
-				document.getElementById('previewImage').innerHTML = '' // Clear previous image
-				document.getElementById('previewImage').appendChild(img)
-			}
-			reader.readAsDataURL(image)
-		}
-	}
-
 	async function createNewBlog(e) {
 		e.preventDefault()
 		setBtnClicked(true)
@@ -100,26 +87,26 @@ const NewBlog = ({ blogData, canEdit }) => {
 		if (!canEdit) formData.set('file', file[0])
 
 		try {
-			const queryParams = new URLSearchParams(location.search)
-			const id = queryParams.get('id')
-			const post = queryParams.get('post')
+			const id = blogData?.id
+			const post = blogData?.post
 
-			const url = canEdit ? `http://localhost:5000/edit?id=${id}&post=${post}` : 'http://localhost:5000/new'
+			const url = canEdit ? `/edit?id=${id}&post=${post}` : '/new'
 			const method = canEdit ? 'PUT' : 'POST'
 			const body = canEdit ? new URLSearchParams(formData).toString() : formData
-			const headers = canEdit ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {} // set no 'Content-type' : 'multipart/form-data' since we will have to set boundary
+			const headers = canEdit ? { 'Content-type': 'application/x-www-form-urlencoded' } : {}
+			// Do not set 'Content-type' : 'multipart/form-data' as you will be required to set boundary value as well
 
-			const response = await fetch(url, {
-				credentials: 'include',
+			const response = await fetch(`${import.meta.env.VITE_SERVER_URL}${url}`, {
 				method: method,
+				credentials: 'include',
 				body: body,
 				headers: headers,
 			})
 			if (!response.ok) {
 				setBtnClicked(false)
-				throw Error('Error:Failed to post blog to server')
+				throw Error('ERROR: Failed to post blog to server')
 			}
-			navigate('/u/my-blogs', { replace: true })
+			navigate('/u/blogs', { replace: true })
 		} catch (error) {
 			console.error(error)
 		}
@@ -144,7 +131,14 @@ const NewBlog = ({ blogData, canEdit }) => {
 							)}
 						</div>
 						{!canEdit && (
-							<input type="file" id="file" className="new-blog-inputs " onChange={previewImage}></input>
+							<input
+								type="file"
+								id="file"
+								className="new-blog-inputs "
+								onChange={(e) => {
+									previewImage(e, setFile)
+								}}
+							></input>
 						)}
 						<input
 							type="text"

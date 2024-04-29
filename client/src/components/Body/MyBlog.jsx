@@ -2,23 +2,24 @@ import { useEffect, useContext, useState } from 'react'
 import { UserContext } from '../Context/UserContext'
 import Feed from '../Posts/Feed'
 
-const MyBlog = () => {
+const MyBlog = ({ bookmarks }) => {
 	const { user } = useContext(UserContext)
 	const [myPost, setMyPost] = useState([])
 	useEffect(() => {
 		const fetchMyPost = async () => {
 			try {
-				const response = await fetch('http://localhost:5000/my-post', {
-					credentials: 'include', // important if you want the api to check the user is authenticated or not
+				const url = bookmarks ? '/mybookmarks' : '/myblogs'
+				const response = await fetch(`${import.meta.env.VITE_SERVER_URL}${url}`, {
 					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json', // Specify JSON content type
-					},
+					credentials: 'include',
 					body: JSON.stringify({
 						userId: user._id,
 					}),
+					headers: {
+						'Content-type': 'application/json',
+					},
 				})
-				if (!response.ok) throw new Error('Failed to fetch your post(s) from the server')
+				if (!response.ok) throw new Error('ERROR: Failed to fetch data from the server')
 				const data = await response.json()
 				setMyPost(data)
 				console.log(data)
@@ -27,7 +28,7 @@ const MyBlog = () => {
 			}
 		}
 		fetchMyPost()
-	}, [user])
+	}, [user, bookmarks])
 	return <main className="container">{myPost && <Feed posts={myPost} />}</main>
 }
 export default MyBlog

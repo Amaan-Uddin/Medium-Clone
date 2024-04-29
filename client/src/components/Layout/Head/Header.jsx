@@ -8,7 +8,7 @@ const Header = ({ logo }) => {
 
 	useEffect(() => {
 		const fetchUser = async () => {
-			const response = await fetch('http://localhost:5000/user', { credentials: 'include' })
+			const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/user`, { credentials: 'include' })
 			const data = await response.json()
 			console.log(data)
 			setUser(data)
@@ -48,7 +48,7 @@ const Header = ({ logo }) => {
 						{user?.loggedIn === true ? (
 							<>
 								<li className="d-flex align-items-center">
-									<Link to={'/u/new-blog'} style={{ color: 'black' }}>
+									<Link to={'/u/new'} style={{ color: 'black' }}>
 										Write <i className="uil uil-pen"></i>
 									</Link>
 								</li>

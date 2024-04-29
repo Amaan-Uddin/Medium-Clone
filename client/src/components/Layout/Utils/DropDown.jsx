@@ -32,7 +32,7 @@ const DropDown = ({ photo, email, username }) => {
 					</div>
 				</li>
 				<li>
-					<Link className="dropdown-item fw-semibold " to={'/u/my-blogs'}>
+					<Link className="dropdown-item fw-semibold " to={'/u/blogs'}>
 						<i className="uil uil-layers"></i> My Blogs
 					</Link>
 				</li>

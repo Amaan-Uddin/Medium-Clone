@@ -3,38 +3,47 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { format, formatDistanceToNow } from 'date-fns'
 import { UserContext } from '../Context/UserContext'
 import Modal from '../Layout/Utils/Modal'
+import { hourCheck } from '../../../public/scripts/utilities'
 
 const ReadBlog = () => {
 	const location = useLocation()
 	const navigate = useNavigate()
+
 	const { user } = useContext(UserContext)
+
 	const [blog, setBlog] = useState()
 	const [bookmark, setBookmark] = useState()
+
+	const [like, setLike] = useState()
+	const [likeCount, setLikeCount] = useState()
 
 	const queryParams = new URLSearchParams(location.search)
 	const id = queryParams.get('id')
 	const post = queryParams.get('post')
 
-	function hourCheck(blogDate) {
-		const newDate = new Date().getTime()
-		const oldDate = new Date(blogDate).getTime()
-		const timeDiff = newDate - oldDate
-		return timeDiff > 24 * 60 * 60 * 1000 * 30 * 12 // (multiply by 7 for appliying the changes if the post is older than 1 week)
-	}
-
-	async function addToBookmark(e) {
+	async function handleInteraction(e) {
 		e.preventDefault()
+		const targetId = e.target.id
 		try {
-			const response = await fetch(`http://localhost:5000/bookmark?id=${id}`, {
-				credentials: 'include',
+			const url = targetId === 'like' ? `/like` : `/bookmark`
+			const body = targetId === 'like' ? { isLiked: like } : { isBookmarked: bookmark }
+
+			const response = await fetch(`${import.meta.env.VITE_SERVER_URL}${url}`, {
 				method: 'POST',
-				body: JSON.stringify({ userId: user._id, isBookmarked: bookmark }),
+				credentials: 'include',
+				body: JSON.stringify({ userId: user._id, id: id, ...body }),
 				headers: { 'Content-type': 'application/json' },
 			})
-			if (!response.ok) throw new Error('Error: Failed to update bookmark')
+			if (!response.ok) throw new Error(`ERROR: Failed to update ${targetId === 'like' ? 'like' : 'bookmark'}`)
 			const data = await response.json()
 			console.log(data)
-			checkBookmark()
+
+			if (targetId === 'like') {
+				setLikeCount(data)
+				checkLike()
+			} else {
+				checkBookmark()
+			}
 		} catch (error) {
 			console.error(error)
 		}
@@ -42,36 +51,39 @@ const ReadBlog = () => {
 
 	function handleEdit(e) {
 		e.preventDefault()
-		navigate(`/u/edit?id=${id}&post=${post}`, {
+		navigate(`/u/edit/${post}`, {
 			state: {
 				edit: true,
 				BlogData: {
+					id: id,
+					post: post,
 					title: blog.title,
 					description: blog.description,
 					content: blog.content,
 					file: blog.image.secure_url,
 					originalname: blog.image.originalname,
-					id: blog.userId._id,
+					userId: blog.userId._id,
 				},
 			},
 		})
 	}
+
 	async function deletePost(e) {
 		e.preventDefault()
 		if (user._id === blog.userId._id) {
 			try {
-				const response = await fetch(`http://localhost:5000/delete?id=${id}`, {
-					credentials: 'include',
+				const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/delete`, {
 					method: 'DELETE',
+					credentials: 'include',
+					body: JSON.stringify({ userId: user._id, id: id }),
 					headers: {
-						'Content-Type': 'application/json',
+						'Content-type': 'application/json',
 					},
-					body: JSON.stringify({ user: user._id }),
 				})
 				if (!response.ok) throw new Error('Error: Failed to delete post')
 				const data = await response.json()
 				console.log(data)
-				navigate('/u/my-blogs', { replace: true })
+				navigate('/u/blogs', { replace: true })
 				document.querySelector('.modal-backdrop').remove()
 				window.location.reload()
 			} catch (error) {
@@ -93,7 +105,24 @@ const ReadBlog = () => {
 			if (!response.ok) throw new Error('Failed to fetch bookmark')
 			const data = await response.json()
 			setBookmark(data)
-			console.log(bookmark)
+		} catch (error) {
+			console.error(error)
+		}
+	}
+
+	async function checkLike() {
+		try {
+			const response = await fetch(`http://localhost:5000/check-like?id=${id}`, {
+				credentials: 'include',
+				method: 'POST',
+				body: JSON.stringify({ userId: user._id }),
+				headers: {
+					'Content-type': 'application/json',
+				},
+			})
+			if (!response.ok) throw new Error('Failed to fetch like')
+			const data = await response.json()
+			setLike(data)
 		} catch (error) {
 			console.error(error)
 		}
@@ -108,6 +137,7 @@ const ReadBlog = () => {
 				const data = await response.json()
 				console.log(data)
 				setBlog(data)
+				setLikeCount(data.like)
 			} catch (error) {
 				console.error(error)
 			}
@@ -115,6 +145,7 @@ const ReadBlog = () => {
 
 		fetchBlogPost()
 		checkBookmark()
+		checkLike()
 	}, [])
 
 	return (
@@ -192,22 +223,35 @@ const ReadBlog = () => {
 							className="d-flex border-top border-bottom align-items-center justify-content-between blog-stat-box"
 							style={{ fontSize: '1.5rem' }}
 						>
-							<div className="d-flex gap-3">
-								<i className="uil uil-thumbs-up">
-									<span style={{ fontSize: '1rem' }}>123</span>
-								</i>
-								<i className="uil uil-comment">
-									<span style={{ fontSize: '1rem' }}>333</span>
-								</i>
+							<div className="d-flex gap-3 ">
+								<div className="d-flex">
+									<button
+										className="btn stat-btn"
+										id="like"
+										onClick={handleInteraction}
+										style={{ color: like ? 'rgb(13 110 253)' : 'black' }}
+									>
+										<i className="uil uil-thumbs-up" id="like"></i>
+									</button>
+									<span style={{ fontSize: '1.1rem', paddingTop: '12px' }} id="like">
+										{likeCount}
+									</span>
+								</div>
+								<div className="d-flex">
+									<button className="btn stat-btn">
+										<i className="uil uil-comment"></i>
+									</button>
+									<span style={{ fontSize: '1.1rem', paddingTop: '12px' }}>333</span>
+								</div>
 							</div>
 							<div>
 								<button
-									onClick={addToBookmark}
-									type="button"
-									className=" btn  border-0 bg-transparent  "
-									style={{ fontSize: '1.5rem', color: bookmark ? 'rgb(13 110 253)' : 'black' }}
+									onClick={handleInteraction}
+									className=" btn  stat-btn  "
+									id="bookmark"
+									style={{ color: bookmark ? 'rgb(13 110 253)' : 'black' }}
 								>
-									<i className="uil uil-bookmark"></i>
+									<i className="uil uil-bookmark" id="bookmark"></i>
 								</button>
 							</div>
 						</div>

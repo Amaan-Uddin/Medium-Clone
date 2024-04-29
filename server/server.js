@@ -12,7 +12,7 @@ const path = require('path')
 const fsPromises = require('fs').promises
 const cloudinary = require('./config/cloudinaryConfig')
 const Blog = require('./models/Blog')
-const Bookmark = require('./models/Bookmark')
+const { Bookmark, Like } = require('./models/BlogStats')
 require('./config/googleStrategy')
 
 const authRouter = require('./routes/auth')
@@ -100,7 +100,7 @@ app.post('/new', uploadMiddleware, async (req, res) => {
 	}
 })
 
-app.post('/my-post', userAuthenticated, async (req, res) => {
+app.post('/myblogs', userAuthenticated, async (req, res) => {
 	try {
 		const { userId } = req.body
 		if (!userId) res.status(403).json({ message: 'valid userId required' })
@@ -143,15 +143,14 @@ app.get('/read-blog', userAuthenticated, async (req, res) => {
 
 app.delete('/delete', userAuthenticated, async (req, res) => {
 	try {
-		const { id } = req.query
-		const { user } = req.body
+		const { userId, id } = req.body
 
-		if (!id || !user) return res.sendStatus(400)
+		if (!id || !userId) return res.sendStatus(400)
 
 		const blogPost = await Blog.findOne({ _id: id }).populate('userId')
 		if (!blogPost) return res.sendStatus(404)
 
-		if (user !== blogPost.userId.id) return res.sendStatus(401)
+		if (userId !== blogPost.userId.id) return res.sendStatus(401)
 
 		await cloudinary.uploader.destroy(blogPost.image.public_id, { resource_type: 'image', type: 'upload' })
 		await Blog.deleteOne({ _id: blogPost.id })
@@ -182,16 +181,31 @@ app.post('/check-bookmark', userAuthenticated, async (req, res) => {
 		res.status(500).json({ message: 'server failed to check bookmark' })
 	}
 })
-app.post('/bookmark', userAuthenticated, async (req, res) => {
+
+app.post('/check-like', userAuthenticated, async (req, res) => {
 	try {
 		const { id } = req.query
-		const { userId, isBookmarked } = req.body
-
-		console.log(req.body)
-
+		const { userId } = req.body
 		if (!id || !userId) {
 			return res.sendStatus(400)
 		}
+		const like = await Like.findOne({ userId: userId })
+		if (!like) throw new Error('Error: server issue')
+		if (like?.like.length) {
+			const result = like.like.includes(id)
+			return res.status(200).json(result)
+		}
+		res.status(200).json(false)
+	} catch (error) {
+		res.status(500).json({ message: 'server failed to check likes' })
+	}
+})
+
+app.post('/bookmark', userAuthenticated, async (req, res) => {
+	try {
+		const { userId, id, isBookmarked } = req.body
+
+		if (!userId || !id) return res.sendStatus(400)
 
 		if (isBookmarked) {
 			const bookmark = await Bookmark.findOneAndUpdate(
@@ -213,6 +227,48 @@ app.post('/bookmark', userAuthenticated, async (req, res) => {
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ message: 'server failed to bookmark post' })
+	}
+})
+app.post('/like', userAuthenticated, async (req, res) => {
+	try {
+		const { userId, id, isLiked } = req.body
+
+		if (!userId || !id) return res.sendStatus(400)
+
+		if (isLiked) {
+			const like = await Like.findOneAndUpdate({ userId: userId }, { $pull: { like: id } }, { new: true })
+			console.log(like)
+			const blog = await Blog.findOneAndUpdate({ _id: id }, { $inc: { like: -1 } }, { new: true })
+			console.log(blog)
+			return res.status(200).json(blog.like)
+		} else {
+			const like = await Like.findOneAndUpdate({ userId: userId }, { $addToSet: { like: id } }, { new: true })
+			console.log(like)
+			const blog = await Blog.findOneAndUpdate({ _id: id }, { $inc: { like: 1 } }, { new: true })
+			console.log(blog)
+			return res.status(200).json(blog.like)
+		}
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ message: 'server failed to bookmark post' })
+	}
+})
+
+app.post('/mybookmarks', userAuthenticated, async (req, res) => {
+	try {
+		const { userId } = req.body
+		if (!userId) return res.sendStatus(400)
+
+		const bookmark = await Bookmark.findOne({ userId: userId }).populate('bookmark')
+		if (!bookmark) throw new Error('Error: server issue')
+		if (bookmark?.bookmark.length) {
+			const populatePromises = bookmark.bookmark.map((post) => post.populate('userId'))
+			await Promise.all(populatePromises)
+			return res.status(200).json(bookmark.bookmark)
+		}
+		res.status(200).json([])
+	} catch (error) {
+		res.status(500).json({ message: 'server failed to send bookmark' })
 	}
 })
 

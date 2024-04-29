@@ -57,10 +57,11 @@ function App() {
 					<Route path="/" element={<Layout logo={logoPath} />}>
 						<Route index element={<Home posts={posts} />}></Route>
 						<Route path="u" element={<ProtectedRoute />}>
-							<Route path="new-blog" element={<NewBlog />}></Route>
-							<Route path="my-blogs" element={<MyBlog />}></Route>
+							<Route path="new" element={<NewBlog />}></Route>
+							<Route path="blogs" element={<MyBlog bookmarks={false} />}></Route>
 							<Route path="read-blog" element={<ReadBlog />}></Route>
-							<Route path="edit" element={<EditBlog />}></Route>
+							<Route path="edit/:post" element={<EditBlog />}></Route>
+							<Route path="bookmarks" element={<MyBlog bookmarks={true} />}></Route>
 						</Route>
 					</Route>
 					<Route path="signup" element={<Signup />}></Route>

@@ -1,20 +1,13 @@
 import { Link } from 'react-router-dom'
 import { format, formatDistanceToNow } from 'date-fns'
+import { hourCheck } from '../../../public/scripts/utilities'
 
 const Post = ({ post }) => {
-	function hourCheck(blogDate) {
-		const newDate = new Date().getTime()
-		const oldDate = new Date(blogDate).getTime()
-		const timeDiff = newDate - oldDate
-		return timeDiff > 24 * 60 * 60 * 1000 * 30 * 12 // (multiply by 7 for appliying the changes if the post is older than 1 week)
-	}
 	return (
-		<article className="d-flex gap-4 py-5 border-bottom">
-			<div className="blog-image">
-				<img src={post.image.secure_url} alt="show img" />
-			</div>
-			<div className="d-flex flex-column align-items-start">
+		<article className="d-flex gap-4 py-5 border-bottom align-items-center" style={{ width: 'fit-content' }}>
+			<div className="d-flex flex-column align-items-start blog-container">
 				<Link to={`/u/read-blog?id=${post._id}&post=${post.slug}`}>
+					{/* state={{ id: post._id }} */}
 					<div className="d-flex gap-2 align-items-center mb-2">
 						<div className="blog profile-pic">
 							<img src={post.userId.photos[0]} alt="" />
@@ -36,6 +29,9 @@ const Post = ({ post }) => {
 						</button>
 					))} */}
 				</div>
+			</div>
+			<div className="blog-image">
+				<img src={post.image.secure_url} alt="show img" />
 			</div>
 		</article>
 	)
