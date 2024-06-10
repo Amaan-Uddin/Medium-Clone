@@ -1,10 +1,9 @@
-import Post from './Post'
-const Feed = ({ posts }) => {
+import Post, { GridPost } from './Post'
+const Feed = ({ posts, isGrid, actag }) => {
 	return (
 		<>
-			{posts.map((post) => (
-				<Post key={post._id} post={post} />
-			))}
+			{isGrid && posts.map((post) => <GridPost key={post._id} post={post} actag={actag} />)}
+			{!isGrid && posts.map((post) => <Post key={post._id} post={post} actag={actag} />)}
 		</>
 	)
 }

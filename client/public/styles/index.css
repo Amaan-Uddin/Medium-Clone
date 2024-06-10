@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=DM+Serif+Text:ital@0;1&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 *,
 *::before,
 *::after {
@@ -30,6 +31,15 @@ img {
 	height: 100%;
 }
 
+body::-webkit-scrollbar {
+	background-color: rgb(215, 215, 215);
+	width: 15px;
+}
+body::-webkit-scrollbar-thumb {
+	background-color: #a4a4a4;
+	border-radius: 1rem;
+}
+
 .logo {
 	width: 10rem;
 	padding: 0.75rem 0;
@@ -53,6 +63,8 @@ img {
 	background-color: #f9f9f9;
 	font-size: 0.9rem;
 	font-weight: 500;
+	padding: 0.5rem 0px;
+	width: 20rem;
 }
 #search:focus {
 	border-color: #ededed; /* Change border color on focus */
@@ -87,6 +99,9 @@ img {
 	font-size: 13px;
 	color: rgb(121, 121, 121);
 }
+.comment.datetime {
+	font-size: 11px;
+}
 .blog-title {
 	color: black;
 	letter-spacing: -1px;
@@ -95,7 +110,7 @@ img {
 }
 
 .blog-container {
-	width: 30rem;
+	width: 31rem;
 	word-wrap: break-word;
 }
 
@@ -127,7 +142,9 @@ img {
 .blog.profile-pic {
 	width: 1.5rem;
 }
-
+.comment.profile-pic {
+	width: 1.35rem;
+}
 .profile-pic img {
 	border-radius: 50% 50%;
 }
@@ -209,17 +226,11 @@ img {
 
 .quill-box {
 	width: 100%;
+	border: 1px solid rgb(170, 170, 170);
 }
 
 .quill {
 	position: relative;
-}
-
-.ql-toolbar {
-	position: sticky;
-	top: 0; /* Stick to the top of the window */
-	z-index: 1; /* Ensure the toolbar stays above other content */
-	background-color: #fff; /* Optional: Set background color */
 }
 
 .loading-box {
@@ -267,4 +278,207 @@ img {
 .grid-2 {
 	width: 100%;
 	max-width: 20rem;
+}
+
+.landing-page {
+	height: 100vh;
+	background-color: #ffc017;
+	padding: 0rem 4rem;
+	color: black;
+}
+
+.landing-h1 {
+	font-family: 'DM Serif Text', serif;
+	font-size: 5.75rem;
+}
+
+.landing-h4 {
+	font-family: 'Poppins', sans-serif;
+	font-weight: 400;
+	letter-spacing: -0.75px;
+}
+
+.auth-title {
+	font-family: 'Times New Roman', Times, serif;
+	font-size: 1.6rem;
+	text-align: center;
+	letter-spacing: -0.3px;
+}
+
+.svg-logo {
+	width: 24px;
+	height: 24px;
+	display: inline-block;
+}
+
+.svg-block {
+	width: 12px;
+	height: 12px;
+	display: block;
+}
+
+.auth-link {
+	min-width: 5rem;
+	width: 100%;
+}
+
+#dlt-btn {
+	scale: 0.785;
+}
+#dlt-btn > .spinner-border {
+	scale: 0.585 !important;
+}
+
+.tag-btn {
+	scale: 0.6;
+}
+.tag-btn:focus {
+	box-shadow: none;
+}
+.tag-cls {
+	border: 1px solid grey;
+	display: flex;
+	padding: 5px 10px;
+}
+.tag-list {
+	flex-wrap: wrap;
+}
+.tag-box {
+	border: 1px solid #ccc;
+	width: 50%;
+	overflow-x: auto;
+	min-height: 4rem;
+	height: 100%;
+}
+.tag-input {
+	border: 0;
+	border-bottom: 1px solid rgb(170, 170, 170);
+	background-color: transparent;
+	width: 50%;
+	padding: 0.2rem 0.1rem;
+}
+
+.all-tags::-webkit-scrollbar {
+	width: 1px;
+}
+.all-tags-btn {
+	text-wrap: nowrap;
+	border: 0px;
+	border-bottom: 2px solid #efefef;
+	background-color: white;
+	font-weight: 600;
+	color: grey;
+}
+
+.focus {
+	color: black;
+	border-bottom: 2px solid black;
+}
+
+.ql-bubble .ql-editor pre.ql-syntax {
+	background-color: #f0f0f0 !important;
+	color: black !important;
+}
+
+.ql-editor::before {
+	font-style: normal !important;
+	font-size: 0.9rem !important;
+}
+.ql-editor {
+	font-size: 0.975rem;
+}
+pre.ql-syntax {
+	padding: 5px 8px;
+	background-color: #f0f0f0 !important;
+}
+
+.show-more-btn {
+	border: 0px;
+	background-color: transparent;
+}
+
+.search-box {
+	display: none;
+	position: absolute;
+	z-index: 3;
+	background-color: #f9f9f9;
+	width: 20rem;
+	overflow-x: auto;
+	padding: 1.25rem 1.45rem;
+	border: 1px solid #dee2e6;
+	border-radius: 1rem;
+	margin-top: 6px;
+	font-size: 0.9rem;
+}
+
+.search-list::-webkit-scrollbar {
+	width: 1px;
+}
+
+.search-result {
+	white-space: nowrap;
+	padding: 0.2rem 0;
+	color: black;
+	font-weight: 500;
+}
+
+.heading {
+	font-size: 2.75rem;
+	letter-spacing: -2px;
+}
+.sub.heading {
+	font-size: 1.75rem;
+	letter-spacing: -0.75px;
+	font-family: 'Poppins', sans-serif;
+}
+
+.grid-layout {
+	margin-top: 2rem;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 16px; /* Adjust the gap between items as needed */
+}
+
+.blog-image.grid-image {
+	max-width: 100%;
+	height: 20rem;
+}
+
+.read-time {
+	align-self: center;
+}
+
+.dashboard.profile-pic {
+	width: 8rem;
+}
+
+.dash-name {
+	font-size: 2.35rem;
+	letter-spacing: -1.25px;
+}
+.dash-email {
+	font-size: 1.5rem;
+	letter-spacing: -0.75px;
+}
+.dash-desc {
+	font-size: 1.25rem;
+}
+
+.profile-edit {
+	border: 0;
+	padding: 0;
+}
+
+.ql-editor {
+	min-height: 10rem;
+}
+
+.about-font > p {
+	font-family: 'Poppins', sans-serif;
+	font-size: 1rem;
+	margin-bottom: 0;
+}
+
+.reverse-icon {
+	transform: scaleX(-1);
 }

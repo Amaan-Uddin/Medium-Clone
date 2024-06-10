@@ -1,15 +1,18 @@
-import { useEffect, useState, useContext } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useEffect, useState, useContext, useRef } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { format, formatDistanceToNow } from 'date-fns'
 import { UserContext } from '../Context/UserContext'
 import Modal from '../Layout/Utils/Modal'
 import { hourCheck } from '../../../public/scripts/utilities'
+import DefaultPfp from '../../../public/logos/Default_pfp.svg'
+import CommentSection from '../Layout/Utils/CommentSection'
+import { ToastContext } from '../Context/ToastContext'
 
 const ReadBlog = () => {
-	const location = useLocation()
 	const navigate = useNavigate()
 
 	const { user } = useContext(UserContext)
+	const { showToast } = useContext(ToastContext)
 
 	const [blog, setBlog] = useState()
 	const [bookmark, setBookmark] = useState()
@@ -17,26 +20,82 @@ const ReadBlog = () => {
 	const [like, setLike] = useState()
 	const [likeCount, setLikeCount] = useState()
 
-	const queryParams = new URLSearchParams(location.search)
-	const id = queryParams.get('id')
-	const post = queryParams.get('post')
+	const [src, setSrc] = useState('')
+	const [comment, setComment] = useState('')
+	const [allComments, setAllComments] = useState('')
+	const textareaRef = useRef(null)
+	const [isReply, setIsReply] = useState({ commentId: null })
 
+	const { post } = useParams()
+	const uid = post.slice(-15)
+	const slug = post.slice(0, -16)
+
+	function adjustTextareaHeight() {
+		const textarea = textareaRef.current
+		if (textarea) {
+			textarea.style.height = 'auto'
+			textarea.style.height = `${Math.min(textarea.scrollHeight, 160)}px`
+		}
+	}
+	function handleEdit(e) {
+		e.preventDefault()
+		navigate(`/edit/${post}`, {
+			state: {
+				edit: true,
+				BlogData: {
+					id: blog._id,
+					slug: slug,
+					title: blog.title,
+					description: blog.description,
+					content: blog.content,
+					tags: blog.tags,
+					file: blog.image.secure_url,
+					originalname: blog.image.originalname,
+					userId: blog.userId._id,
+				},
+			},
+		})
+	}
+	async function deletePost(e) {
+		e.preventDefault()
+		if (user._id === blog.userId._id) {
+			try {
+				const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/delete`, {
+					method: 'DELETE',
+					credentials: 'include',
+					body: JSON.stringify({ userId: user._id, id: blog._id }),
+					headers: {
+						'Content-type': 'application/json',
+					},
+				})
+				if (!response.ok) throw new Error('Server failed to delete post.')
+				const message = await response.json()
+				navigate('/blogs', { replace: true })
+				document.querySelector('.modal-backdrop').remove()
+				showToast(message)
+				window.location.reload()
+			} catch (error) {
+				showToast(error.message)
+			}
+		}
+	}
 	async function handleInteraction(e) {
 		e.preventDefault()
 		const targetId = e.target.id
 		try {
-			const url = targetId === 'like' ? `/like` : `/bookmark`
+			const endpoint = targetId === 'like' ? `like` : `bookmark`
 			const body = targetId === 'like' ? { isLiked: like } : { isBookmarked: bookmark }
 
-			const response = await fetch(`${import.meta.env.VITE_SERVER_URL}${url}`, {
+			const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/${endpoint}`, {
 				method: 'POST',
 				credentials: 'include',
-				body: JSON.stringify({ userId: user._id, id: id, ...body }),
+				body: JSON.stringify({ userId: user._id, id: blog._id, ...body }),
 				headers: { 'Content-type': 'application/json' },
 			})
-			if (!response.ok) throw new Error(`ERROR: Failed to update ${targetId === 'like' ? 'like' : 'bookmark'}`)
+			if (!response.ok) throw new Error(`Failed to update ${targetId === 'like' ? 'likes' : 'bookmark'}`)
 			const data = await response.json()
-			console.log(data)
+
+			if (targetId === 'bookmark') showToast(`Post ${!bookmark ? 'added to' : 'removed from'} bookmarks.`)
 
 			if (targetId === 'like') {
 				setLikeCount(data)
@@ -45,56 +104,12 @@ const ReadBlog = () => {
 				checkBookmark()
 			}
 		} catch (error) {
-			console.error(error)
+			showToast(error.message)
 		}
 	}
-
-	function handleEdit(e) {
-		e.preventDefault()
-		navigate(`/u/edit/${post}`, {
-			state: {
-				edit: true,
-				BlogData: {
-					id: id,
-					post: post,
-					title: blog.title,
-					description: blog.description,
-					content: blog.content,
-					file: blog.image.secure_url,
-					originalname: blog.image.originalname,
-					userId: blog.userId._id,
-				},
-			},
-		})
-	}
-
-	async function deletePost(e) {
-		e.preventDefault()
-		if (user._id === blog.userId._id) {
-			try {
-				const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/delete`, {
-					method: 'DELETE',
-					credentials: 'include',
-					body: JSON.stringify({ userId: user._id, id: id }),
-					headers: {
-						'Content-type': 'application/json',
-					},
-				})
-				if (!response.ok) throw new Error('Error: Failed to delete post')
-				const data = await response.json()
-				console.log(data)
-				navigate('/u/blogs', { replace: true })
-				document.querySelector('.modal-backdrop').remove()
-				window.location.reload()
-			} catch (error) {
-				console.error(error)
-			}
-		}
-	}
-
 	async function checkBookmark() {
 		try {
-			const response = await fetch(`http://localhost:5000/check-bookmark?id=${id}`, {
+			const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/check-bookmark?id=${blog._id}`, {
 				credentials: 'include',
 				method: 'POST',
 				body: JSON.stringify({ userId: user._id }),
@@ -102,17 +117,16 @@ const ReadBlog = () => {
 					'Content-type': 'application/json',
 				},
 			})
-			if (!response.ok) throw new Error('Failed to fetch bookmark')
+			if (!response.ok) throw new Error('Something went wrong, server failed to check bookmark status.')
 			const data = await response.json()
 			setBookmark(data)
 		} catch (error) {
-			console.error(error)
+			showToast(error.message)
 		}
 	}
-
 	async function checkLike() {
 		try {
-			const response = await fetch(`http://localhost:5000/check-like?id=${id}`, {
+			const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/check-like?id=${blog._id}`, {
 				credentials: 'include',
 				method: 'POST',
 				body: JSON.stringify({ userId: user._id }),
@@ -120,33 +134,110 @@ const ReadBlog = () => {
 					'Content-type': 'application/json',
 				},
 			})
-			if (!response.ok) throw new Error('Failed to fetch like')
+			if (!response.ok) throw new Error('Something went wrong, server failed to check like status.')
 			const data = await response.json()
 			setLike(data)
 		} catch (error) {
-			console.error(error)
+			showToast(error.message)
 		}
 	}
+	async function addComment() {
+		try {
+			const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/add-comment`, {
+				method: 'POST',
+				credentials: 'include',
+				body: JSON.stringify({ userId: user._id, id: blog._id, comment: comment }),
+				headers: {
+					'Content-type': 'application/json',
+				},
+			})
+			if (!response.ok) throw new Error('Failed to add comment.')
+			const data = await response.json()
+			data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+			setAllComments(data)
+			showToast('Comment added successfully')
+			textareaRef.current.value = ''
+		} catch (error) {
+			showToast(error.message)
+		}
+	}
+	async function replyComment() {
+		try {
+			const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/reply-comment`, {
+				method: 'POST',
+				credentials: 'include',
+				body: JSON.stringify({
+					commentId: isReply.commentId,
+					userId: user._id,
+					id: blog._id,
+					comment: comment,
+				}),
+				headers: {
+					'Content-type': 'application/json',
+				},
+			})
+			if (!response.ok) throw new Error('Failed to add reply.')
+			const data = await response.json()
+			data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+			setAllComments(data)
+			setIsReply({ commentId: null })
+			textareaRef.current.value = ''
+			showToast('Reply added successfully.')
+		} catch (error) {
+			showToast(error.message)
+		}
+	}
+	async function fetchAllComments() {
+		try {
+			const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/fetch-comments`, {
+				method: 'POST',
+				credentials: 'include',
+				body: JSON.stringify({ id: blog._id }),
+				headers: {
+					'Content-type': 'application/json',
+				},
+			})
+			if (!response.ok) throw new Error('Failed to fetch comments.')
+			const data = await response.json()
+			data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+			setAllComments(data)
+		} catch (error) {
+			showToast(error.message)
+		}
+	}
+
 	useEffect(() => {
 		const fetchBlogPost = async () => {
 			try {
-				const response = await fetch(`http://localhost:5000/read-blog?id=${id}&post=${post}`, {
-					credentials: 'include',
-				})
+				const response = await fetch(
+					`${import.meta.env.VITE_SERVER_URL}/api/read-blog?uid=${uid}&slug=${slug}`,
+					{
+						credentials: 'include',
+					}
+				)
 				if (!response.ok) throw new Error('Error: Failed to fetch post')
 				const data = await response.json()
-				console.log(data)
 				setBlog(data)
 				setLikeCount(data.like)
+				setSrc(data.userId.photos[0])
 			} catch (error) {
 				console.error(error)
 			}
 		}
-
 		fetchBlogPost()
-		checkBookmark()
-		checkLike()
-	}, [])
+	}, [post])
+
+	useEffect(() => {
+		if (blog?._id) {
+			checkBookmark()
+			checkLike()
+			fetchAllComments()
+		}
+	}, [blog])
+
+	useEffect(() => {
+		adjustTextareaHeight()
+	}, [comment])
 
 	return (
 		<>
@@ -163,7 +254,13 @@ const ReadBlog = () => {
 							<div className="d-flex my-4 align-items-center justify-content-between">
 								<div className="d-flex gap-3 align-items-center">
 									<div className="profile-pic">
-										<img src={blog.userId.photos[0]} alt="show profile" />
+										<img
+											src={src}
+											alt="show profile"
+											onError={() => {
+												setSrc(DefaultPfp)
+											}}
+										/>
 									</div>
 									<div className="d-flex flex-column ">
 										<p className="read-author">{blog.userId.displayName}</p>
@@ -238,10 +335,17 @@ const ReadBlog = () => {
 									</span>
 								</div>
 								<div className="d-flex">
-									<button className="btn stat-btn">
+									<button
+										className="btn stat-btn"
+										onClick={() => {
+											textareaRef.current.focus()
+										}}
+									>
 										<i className="uil uil-comment"></i>
 									</button>
-									<span style={{ fontSize: '1.1rem', paddingTop: '12px' }}>333</span>
+									<span style={{ fontSize: '1.1rem', paddingTop: '12px' }}>
+										{blog.comments.length}
+									</span>
 								</div>
 							</div>
 							<div>
@@ -259,6 +363,43 @@ const ReadBlog = () => {
 							<img src={blog.image.secure_url} alt="show cover" />
 						</div>
 						<div dangerouslySetInnerHTML={{ __html: blog.content }} className="read-content my-5"></div>
+						<div className="d-flex gap-2 w-75 flex-wrap mb-5">
+							{blog.tags.map((tag, index) => (
+								<Link key={index} className="text-black" to={`/search/tag?q=${tag}`}>
+									<button className="btn rounded-5 py-2 px-4  bg-light">{tag}</button>
+								</Link>
+							))}
+						</div>
+						{allComments && (
+							<CommentSection
+								comments={allComments}
+								author={blog.userId._id}
+								setAllComments={setAllComments}
+								setIsReply={setIsReply}
+								textareaRef={textareaRef}
+							/>
+						)}
+						<div className="mt-3">
+							<textarea
+								ref={textareaRef}
+								type="text"
+								name="commentbox"
+								id="commentbox"
+								onChange={(e) => {
+									setComment(e.target.value)
+								}}
+								placeholder="Comment"
+								className="new-blog-inputs"
+								rows="1"
+								style={{ resize: 'none', overflow: 'hidden' }}
+							/>
+							<button
+								className="btn border-0 bg-black fw-semibold rounded-0 text-white"
+								onClick={isReply.commentId ? replyComment : addComment}
+							>
+								Comment
+							</button>
+						</div>
 					</article>
 				</main>
 			)}

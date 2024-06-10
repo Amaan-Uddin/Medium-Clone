@@ -20,7 +20,7 @@ const EditBlog = () => {
 			{blogData?.userId === user._id ? (
 				<NewBlog blogData={blogData} canEdit={canEdit} />
 			) : (
-				<Navigate to={'/'} replace state={{ from: location }} />
+				<Navigate to={'/home'} replace state={{ from: location }} />
 			)}
 		</>
 	)

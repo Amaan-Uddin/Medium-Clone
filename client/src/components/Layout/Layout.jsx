@@ -1,11 +1,10 @@
 import Header from './Head/Header'
-// import Footer from './Footer/Footer'
 import { Outlet } from 'react-router-dom'
 
-const Layout = ({ logo }) => {
+const Layout = () => {
 	return (
 		<>
-			<Header logo={logo} />
+			<Header />
 			<div className="layout">
 				<Outlet />
 			</div>

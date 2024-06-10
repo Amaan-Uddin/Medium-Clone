@@ -25,5 +25,5 @@ public/LOGO/Logo.zip
 *.sw?
 
 RedundentCode.jsx
-
+.env
 
