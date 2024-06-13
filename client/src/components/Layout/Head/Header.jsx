@@ -62,138 +62,136 @@ const Header = () => {
 	}, [location])
 
 	return (
-		<header
-			className={user.loggedIn ? 'border-bottom' : ''}
-			style={user?.loggedIn ? { backgroundColor: '' } : { backgroundColor: '#ffc017' }}
-		>
-			<nav className="d-flex justify-content-between align-items-center px-3">
-				<div id="searchbox " className="d-flex align-items-center gap-1">
-					<Link to={user.loggedIn ? '/home' : '/'}>
-						<div className="logo">
-							<img src={fullLogo} alt="logo" />
-						</div>
-					</Link>
-					{user?.loggedIn && (
-						<div className="position-relative">
-							<input
-								type="text"
-								name="search"
-								id="search"
-								placeholder="search"
-								className="px-3 form-control search-bar"
-								autoComplete="off"
-								value={search}
-								onFocus={() => {
-									handleFocus()
-								}}
-								onBlur={handleBlur}
-								onChange={(e) => {
-									setSearch(e.target.value)
-								}}
-								onKeyUp={(e) => {
-									if (search.length > 1 && e.code === 'Enter') {
-										navigate(`/search?q=${search}`)
-									}
-									if (search.length) {
+		<>
+			{user.loggedIn && (
+				<header className="border-bottom">
+					<nav className="d-flex justify-content-between align-items-center px-3">
+						<div id="searchbox " className="d-flex align-items-center gap-1">
+							<Link to={user.loggedIn ? '/home' : '/'}>
+								<div className="logo">
+									<img src={fullLogo} alt="logo" />
+								</div>
+							</Link>
+							<div className="position-relative">
+								<input
+									type="text"
+									name="search"
+									id="search"
+									placeholder="search"
+									className="px-3 form-control search-bar"
+									autoComplete="off"
+									value={search}
+									onFocus={() => {
 										handleFocus()
-										performSearch()
-									}
-									if (!search.length) {
-										searchBox.current.style.display = 'none'
-										setSearchResult([])
-									}
-								}}
-							/>
-							<div ref={searchBox} className="search-box">
-								<div>
-									<ul className="d-flex flex-column overflow-x-auto align-items-start justify-content-center search-list">
-										{searchResult.blogPosts && searchResult.blogPosts.length > 0 && (
-											<>
-												<p className="fw-semibold">Blogs</p>
-												{searchResult.blogPosts.map((post) => (
-													<li className="d-flex gap-2 align-items-center" key={post._id}>
-														<span
-															style={{ fontSize: '1rem', fontWeight: '700' }}
-															className="text-primary"
+									}}
+									onBlur={handleBlur}
+									onChange={(e) => {
+										setSearch(e.target.value)
+									}}
+									onKeyUp={(e) => {
+										if (search.length > 1 && e.code === 'Enter') {
+											navigate(`/search?q=${search}`)
+										}
+										if (search.length) {
+											handleFocus()
+											performSearch()
+										}
+										if (!search.length) {
+											searchBox.current.style.display = 'none'
+											setSearchResult([])
+										}
+									}}
+								/>
+								<div ref={searchBox} className="search-box bg-white">
+									<div>
+										<ul className="d-flex flex-column overflow-x-auto align-items-start justify-content-center search-list">
+											{searchResult.blogPosts && searchResult.blogPosts.length > 0 && (
+												<>
+													<p className="fw-semibold">Blogs</p>
+													{searchResult.blogPosts.map((post) => (
+														<li className="d-flex gap-2 align-items-center" key={post._id}>
+															<span
+																style={{ fontSize: '1rem', fontWeight: '700' }}
+																className="text-primary"
+															>
+																{`M:`}
+															</span>
+															<Link
+																className="search-result"
+																to={`/read-blog/${post.slug}-${post.uid}`}
+															>
+																{post.title}
+															</Link>
+														</li>
+														// eslint-disable-next-line no-mixed-spaces-and-tabs
+													))}
+												</>
+											)}
+										</ul>
+									</div>
+									<div>
+										<ul className="d-flex flex-column overflow-x-auto align-items-start justify-content-center search-list mb-2">
+											{searchResult.profiles && searchResult.profiles.length > 0 && (
+												<>
+													<p className="fw-semibold">People</p>
+													{searchResult.profiles.map((profile) => (
+														<li
+															className="d-flex gap-2 align-items-center pt-1"
+															key={profile._id}
 														>
-															{`M:`}
-														</span>
-														<Link
-															className="search-result"
-															to={`/read-blog/${post.slug}-${post.uid}`}
+															<span
+																style={{ fontSize: '1.2rem', fontWeight: '700' }}
+																className="text-info"
+															>
+																@
+															</span>
+															<Link
+																className="search-result tags bg-white border border-1 rounded-5 py-1 px-3"
+																to={`/${profile.username}`}
+															>
+																{profile.username.split('@')[1]}
+															</Link>
+														</li>
+														// eslint-disable-next-line no-mixed-spaces-and-tabs
+													))}
+												</>
+											)}
+										</ul>
+									</div>
+									<div>
+										<ul className="d-flex flex-column overflow-x-auto align-items-start justify-content-center search-list">
+											{searchResult.blogTags && searchResult.blogTags.length > 0 && (
+												<>
+													<p className="fw-semibold">Tags</p>
+													{searchResult.blogTags.map((tag) => (
+														<li
+															className="d-flex gap-2 align-items-center pt-1"
+															key={tag._id}
 														>
-															{post.title}
-														</Link>
-													</li>
-													// eslint-disable-next-line no-mixed-spaces-and-tabs
-												))}
-											</>
-										)}
-									</ul>
-								</div>
-								<div>
-									<ul className="d-flex flex-column overflow-x-auto align-items-start justify-content-center search-list mb-2">
-										{searchResult.profiles && searchResult.profiles.length > 0 && (
-											<>
-												<p className="fw-semibold">People</p>
-												{searchResult.profiles.map((profile) => (
-													<li
-														className="d-flex gap-2 align-items-center pt-1"
-														key={profile._id}
-													>
-														<span
-															style={{ fontSize: '1.2rem', fontWeight: '700' }}
-															className="text-info"
-														>
-															@
-														</span>
-														<Link
-															className="search-result tags bg-white border border-1 rounded-5 py-1 px-3"
-															to={`/${profile.username}`}
-														>
-															{profile.username.split('@')[1]}
-														</Link>
-													</li>
-													// eslint-disable-next-line no-mixed-spaces-and-tabs
-												))}
-											</>
-										)}
-									</ul>
-								</div>
-								<div>
-									<ul className="d-flex flex-column overflow-x-auto align-items-start justify-content-center search-list">
-										{searchResult.blogTags && searchResult.blogTags.length > 0 && (
-											<>
-												<p className="fw-semibold">Tags</p>
-												{searchResult.blogTags.map((tag) => (
-													<li className="d-flex gap-2 align-items-center pt-1" key={tag._id}>
-														<span
-															style={{ fontSize: '1.3rem', fontWeight: '700' }}
-															className="text-warning"
-														>
-															#
-														</span>
-														<Link
-															className="search-result tags bg-white border border-1 rounded-5 py-1 px-3"
-															to={`/search/tag?q=${tag.tag}`}
-														>
-															{tag.tag}
-														</Link>
-													</li>
-													// eslint-disable-next-line no-mixed-spaces-and-tabs
-												))}
-											</>
-										)}
-									</ul>
+															<span
+																style={{ fontSize: '1.3rem', fontWeight: '700' }}
+																className="text-warning"
+															>
+																#
+															</span>
+															<Link
+																className="search-result tags bg-white border border-1 rounded-5 py-1 px-3"
+																to={`/search/tag?q=${tag.tag}`}
+															>
+																{tag.tag}
+															</Link>
+														</li>
+														// eslint-disable-next-line no-mixed-spaces-and-tabs
+													))}
+												</>
+											)}
+										</ul>
+									</div>
 								</div>
 							</div>
 						</div>
-					)}
-				</div>
-				<div className="mx-4">
-					<ul className="d-flex gap-4">
-						{user?.loggedIn ? (
-							<>
+						<div className="mx-4">
+							<ul className="d-flex gap-4">
 								<li className="d-flex align-items-center">
 									<Link to={'/new'} style={{ color: 'black', textWrap: 'nowrap' }}>
 										Write <i className="uil uil-pen"></i>
@@ -202,25 +200,12 @@ const Header = () => {
 								<li className="profile-pic">
 									<DropDown photo={user.photos[0]} email={user.email} username={user.displayName} />
 								</li>
-							</>
-						) : (
-							<>
-								<li>
-									<button
-										style={{ color: 'black' }}
-										className="btn border-0"
-										data-bs-toggle="modal"
-										data-bs-target="#signupModal"
-									>
-										Sign up <i className="uil uil-signin"></i>
-									</button>
-								</li>
-							</>
-						)}
-					</ul>
-				</div>
-			</nav>
-		</header>
+							</ul>
+						</div>
+					</nav>
+				</header>
+			)}
+		</>
 	)
 }
 export default Header

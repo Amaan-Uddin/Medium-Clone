@@ -5,8 +5,8 @@ import { ToastContext } from '../Context/ToastContext'
 
 const MyBlog = ({ bookmarks }) => {
 	const { user } = useContext(UserContext)
-	const [myPost, setMyPost] = useState()
 	const { showToast } = useContext(ToastContext)
+	const [myPost, setMyPost] = useState()
 	useEffect(() => {
 		const fetchMyPost = async () => {
 			try {

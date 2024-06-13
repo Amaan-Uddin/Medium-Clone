@@ -15,6 +15,7 @@ import SearchPage from './components/Body/SearchPage'
 import SearchTagPage from './components/Body/SearchTagPage'
 import ToastComponent from './components/Layout/Utils/ToastComponent'
 import { ToastProvider } from './components/Context/ToastContext'
+import NotFound from './components/Body/NotFound'
 
 function App() {
 	const location = useLocation()
@@ -133,6 +134,8 @@ function App() {
 								</Route>
 							</Route>
 						</Route>
+						<Route path="/not-found" element={<NotFound />}></Route>
+						<Route path="*" element={<NotFound />}></Route>
 					</Routes>
 				</ToastProvider>
 			</UserContextProvider>

@@ -1,11 +1,12 @@
 import { useContext, useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import Feed from '../Posts/Feed'
 import { ToastContext } from '../Context/ToastContext'
 
 const SearchTagPage = () => {
 	const { showToast } = useContext(ToastContext)
 	const [queryParams] = useSearchParams()
+	const navigate = useNavigate()
 	const paramValue = queryParams.get('q')
 	const [tagPosts, setTagPosts] = useState([])
 
@@ -28,7 +29,8 @@ const SearchTagPage = () => {
 				showToast(error.message)
 			}
 		}
-		fetchTagPosts()
+		if (paramValue) fetchTagPosts()
+		else navigate('/not-found')
 	}, [paramValue])
 
 	return (

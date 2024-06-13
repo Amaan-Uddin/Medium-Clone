@@ -215,13 +215,14 @@ const ReadBlog = () => {
 						credentials: 'include',
 					}
 				)
-				if (!response.ok) throw new Error('Error: Failed to fetch post')
+				if (response.status === 404) return navigate('/not-found')
+				if (!response.ok) throw new Error('Failed to fetch blog post.')
 				const data = await response.json()
 				setBlog(data)
 				setLikeCount(data.like)
 				setSrc(data.userId.photos[0])
 			} catch (error) {
-				console.error(error)
+				showToast(error.message)
 			}
 		}
 		fetchBlogPost()
@@ -343,9 +344,7 @@ const ReadBlog = () => {
 									>
 										<i className="uil uil-comment"></i>
 									</button>
-									<span style={{ fontSize: '1.1rem', paddingTop: '12px' }}>
-										{blog.comments.length}
-									</span>
+									<span style={{ fontSize: '1.1rem', paddingTop: '12px' }}>{blog.commentCount}</span>
 								</div>
 							</div>
 							<div>

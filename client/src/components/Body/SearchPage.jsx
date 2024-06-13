@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react'
-import { useSearchParams, Link } from 'react-router-dom'
+import { useSearchParams, Link, useNavigate } from 'react-router-dom'
 import Feed from '../Posts/Feed'
 import { LoaderBorder2 } from '../Layout/Utils/Loaders'
 import { ToastContext } from '../Context/ToastContext'
@@ -7,6 +7,7 @@ import { ToastContext } from '../Context/ToastContext'
 const SearchPage = () => {
 	const { showToast } = useContext(ToastContext)
 	const [queryParams] = useSearchParams()
+	const navigate = useNavigate()
 	const paramValue = queryParams.get('q')
 	const [isLoading, setIsLoading] = useState(true)
 	const [searchPosts, setSearchPosts] = useState()
@@ -22,14 +23,15 @@ const SearchPage = () => {
 						'Content-type': 'application/json',
 					},
 				})
-				if (!response.ok) throw new Error('Failed to fetch search posts.')
+				if (!response.ok) throw new Error('Failed to fetch query posts.')
 				const data = await response.json()
 				setSearchPosts(data)
 			} catch (error) {
 				showToast(error.message)
 			}
 		}
-		fetchSearchPosts()
+		if (paramValue) fetchSearchPosts()
+		else navigate('/not-found')
 	}, [paramValue])
 
 	useEffect(() => {

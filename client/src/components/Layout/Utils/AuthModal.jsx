@@ -1,7 +1,10 @@
 import GoolgeLogo from '../../../../public/logos/Google__G.svg'
 import EmailLogo from '../../../../public/logos/Email_E.svg'
+import { useContext } from 'react'
+import { ToastContext } from '../../Context/ToastContext'
 
 const SignupModal = () => {
+	const { showToast } = useContext(ToastContext)
 	const googleAuth = async (e) => {
 		e.preventDefault()
 		window.history.replaceState(null, '', window.location.origin)
@@ -39,7 +42,14 @@ const SignupModal = () => {
 										<div className="svg-block"></div>
 									</button>
 
-									<button className="bg-white d-flex justify-content-between gap-3 px-4 py-2 border border-1 rounded-5 auth-link">
+									<button
+										className="bg-white d-flex justify-content-between gap-3 px-4 py-2 border border-1 rounded-5 auth-link"
+										onClick={() => {
+											showToast(
+												'Sign up witn Email is currently unavailable, please try Sign up with Google.'
+											)
+										}}
+									>
 										<img src={EmailLogo} alt="" className="svg-logo" /> Sign up with Email{' '}
 										<div className="svg-block"></div>
 									</button>

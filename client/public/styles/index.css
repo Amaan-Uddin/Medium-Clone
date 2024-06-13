@@ -482,3 +482,32 @@ pre.ql-syntax {
 .reverse-icon {
 	transform: scaleX(-1);
 }
+
+.not-found {
+	display: flex;
+	height: 100vh;
+	align-items: center;
+}
+.not-found-p {
+	text-transform: uppercase;
+}
+.not-found-h1 {
+	font-size: 7rem;
+	color: #a4a4a4;
+}
+.not-found-p2 {
+	font-family: Georgia, Cambria, 'Times New Roman', Times, serif;
+	font-size: 4rem;
+	line-height: 70px;
+	font-weight: 300;
+	letter-spacing: -1px;
+}
+.not-found-div {
+	margin-top: 1rem;
+	font-size: 1.35rem;
+	letter-spacing: -0.5px;
+}
+
+.symbol {
+	width: 5.65rem;
+}

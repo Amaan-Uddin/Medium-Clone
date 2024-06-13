@@ -53,6 +53,7 @@ const BlogSchema = new Schema({
 			ref: 'Comments',
 		},
 	],
+	commentCount: { type: Number, default: 0 },
 	like: { type: Number, default: 0 },
 	createdAt: {
 		type: Date,

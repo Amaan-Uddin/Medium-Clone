@@ -3,12 +3,13 @@ import { UserContext } from '../Context/UserContext'
 import About from './About'
 import DefaultPfp from '../../../public/logos/Default_pfp.svg'
 import Feed from '../Posts/Feed'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { ToastContext } from '../Context/ToastContext'
 
 const Dashboard = () => {
 	const { user } = useContext(UserContext)
 	const { showToast } = useContext(ToastContext)
+	const navigate = useNavigate()
 
 	const { username } = useParams()
 	const [profile, setProfile] = useState()
@@ -32,13 +33,14 @@ const Dashboard = () => {
 						'Content-type': 'application/json',
 					},
 				})
-				if (!response.ok) throw new Error('failed to fetch profile')
+				if (response.status === 404) return navigate('/not-found')
+				if (!response.ok) throw new Error('Failed to fetch profile.')
 				const data = await response.json()
 				setProfile(data)
 				setSrc(data.userId.photos[0])
 				setActiveTag(0)
 			} catch (error) {
-				console.error(error)
+				showToast(error.message)
 			}
 		}
 		fetchProfile()

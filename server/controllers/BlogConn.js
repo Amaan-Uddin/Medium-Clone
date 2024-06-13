@@ -149,7 +149,7 @@ const readBlog = async (req, res) => {
 	try {
 		const { uid, slug } = req.query
 		if (!uid || !slug) {
-			return res.sendStatus(400)
+			return res.sendStatus(404)
 		}
 		const blogPost = await Blog.findOne({ uid: uid, slug: slug }).populate([
 			{ path: 'userId', select: 'displayName photos' },
@@ -158,7 +158,6 @@ const readBlog = async (req, res) => {
 		if (!blogPost) return res.sendStatus(404)
 		res.status(200).json(blogPost)
 	} catch (error) {
-		console.error(error)
 		res.status(500).json({ message: 'server failed to fetch post' })
 	}
 }
@@ -477,9 +476,12 @@ const addComment = async (req, res, next) => {
 const fetchComments = async (req, res) => {
 	try {
 		const { id } = req.body
+		const commentCount = await Comments.find({ blogId: id }).select('_id')
 		const allComments = await Blog.findOne({ _id: id }).populate('comments')
 		if (!allComments) return res.sendStatus(404)
 		if (allComments?.comments.length) {
+			allComments.commentCount = commentCount.length
+			await allComments.save()
 			const populatePromises = allComments.comments.map((comment) =>
 				comment.populate('userId', 'displayName photos')
 			)

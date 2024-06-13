@@ -47,22 +47,25 @@ const Post = ({ post, actag }) => {
 				</Link>
 				<div className="d-flex gap-3 mt-4 flex-wrap align-items-center">
 					{actag && (
-						<button
-							className="btn rounded-5 py-2 px-4 bg-light"
-							style={{ fontSize: '.8rem', fontWeight: '500' }}
-						>
-							{actag.tag}
-						</button>
-					)}
-					{!actag &&
-						post.tags.slice(0, 1).map((tag, index) => (
+						<Link className="text-black" to={`/search/tag?q=${actag.tag}`}>
 							<button
-								key={index}
 								className="btn rounded-5 py-2 px-4 bg-light"
 								style={{ fontSize: '.8rem', fontWeight: '500' }}
 							>
-								{tag}
+								{actag.tag}
 							</button>
+						</Link>
+					)}
+					{!actag &&
+						post.tags.slice(0, 1).map((tag, index) => (
+							<Link key={index} className="text-black" to={`/search/tag?q=${tag}`}>
+								<button
+									className="btn rounded-5 py-2 px-4 bg-light"
+									style={{ fontSize: '.8rem', fontWeight: '500' }}
+								>
+									{tag}
+								</button>
+							</Link>
 						))}
 					<p className="read-time">{getWordCount(post.content)} min read</p>
 				</div>
