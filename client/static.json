@@ -1,0 +1,10 @@
+{
+	"redirects": [
+		{
+			"source": "/auth/google/callback",
+			"destination": "https://medium-clone-server.onrender.com/auth/google/callback",
+			"type": 302
+		}
+	],
+	"rewrites": [{ "source": "/**", "destination": "/index.html" }]
+}
