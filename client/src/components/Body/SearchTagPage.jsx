@@ -44,7 +44,7 @@ const SearchTagPage = () => {
 					<span className="text-black">{paramValue}</span>
 				</span>
 				<span className="fw-normal" style={{ fontSize: '1.15rem', letterSpacing: '0px' }}>
-					Topic <span className="fs-5">·</span> {tagPosts.length} stories
+					Topic <span className="fs-5">·</span> {tagPosts.length > 0 && tagPosts.length} stories
 				</span>
 			</div>
 			<div className="grid-layout">{tagPosts && <Feed posts={tagPosts} isGrid={true} actag={paramValue} />}</div>

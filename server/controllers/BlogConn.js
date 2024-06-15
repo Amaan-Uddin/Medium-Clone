@@ -6,7 +6,6 @@ const Profile = require('../models/Profile')
 const Comments = require('../models/Comments')
 const User = require('../models/User')
 const findOrCreate = require('../function/findOrCreate')
-// const updateTags = require('../middleware/updateTags')
 
 const newPost = async (req, res) => {
 	try {
@@ -18,7 +17,7 @@ const newPost = async (req, res) => {
 
 		const profile = await findOrCreate({ userId: userId }, Profile)
 		const result = await cloudinary.uploader.upload(req.file.path, {
-			folder: 'mern-blog',
+			folder: process.env.CLOUDINARY_PROD_DIRECTORY,
 			resource_type: 'image',
 			type: 'upload',
 		})
@@ -184,7 +183,6 @@ const editPost = async (req, res) => {
 				tags: JSON.parse(tags),
 			}
 		)
-		// await updateTags(JSON.parse(tags))
 		const newTags = JSON.parse(tags)
 		oldTags.forEach(async (tag) => {
 			if (!newTags.includes(tag)) {
@@ -219,12 +217,6 @@ const deletePost = async (req, res) => {
 
 		await cloudinary.uploader.destroy(blogPost.image.public_id, { resource_type: 'image', type: 'upload' })
 		await Blog.findOneAndDelete({ _id: id })
-		// await blogPost.deleteOne()
-		// await Bookmark.updateMany({ bookmark: blogPost._id }, { $pull: { bookmark: blogPost._id } })
-		// blogPost.tags.forEach(async (tag) => {
-		// 	await Tags.updateMany({ tag: tag }, { $pull: { posts: blogPost._id } })
-		// })
-		// await Comments.deleteMany({ blogId: id })
 		res.status(200).json({ message: 'Successfully deleted post.' })
 	} catch (error) {
 		console.error(error)
@@ -277,24 +269,18 @@ const bookmarkPost = async (req, res) => {
 
 		if (!userId || !id) return res.sendStatus(400)
 
-		if (isBookmarked) {
-			const bookmark = await Bookmark.findOneAndUpdate(
-				{ userId: userId },
-				{ $pull: { bookmark: id } },
-				{ new: true }
-			)
-			return res.status(200).json({ message: 'successfully removed bookmark' })
-		} else {
-			const bookmark = await Bookmark.findOneAndUpdate(
-				{ userId: userId },
-				{ $addToSet: { bookmark: id } },
-				{ new: true }
-			)
-			return res.status(200).json({ message: 'successfully added to bookmark' })
+		const updateBookmark = isBookmarked ? { $pull: { bookmark: id } } : { $addToSet: { bookmark: id } }
+
+		const bookmark = await Bookmark.findOneAndUpdate({ userId: userId }, updateBookmark, { new: true })
+
+		if (!bookmark) {
+			return res.sendStatus(404)
 		}
+
+		const message = isBookmarked ? 'Successfully removed bookmark' : 'Successfully added to bookmark'
+		return res.status(200).json({ message })
 	} catch (error) {
-		console.error(error)
-		res.status(500).json({ message: 'server failed to bookmark post' })
+		return res.status(500).json({ message: 'Server failed to bookmark post' })
 	}
 }
 
@@ -304,18 +290,18 @@ const likePost = async (req, res) => {
 
 		if (!userId || !id) return res.sendStatus(400)
 
-		if (isLiked) {
-			const like = await Like.findOneAndUpdate({ userId: userId }, { $pull: { like: id } }, { new: true })
-			const blog = await Blog.findOneAndUpdate({ _id: id }, { $inc: { like: -1 } }, { new: true })
-			return res.status(200).json(blog.like)
-		} else {
-			const like = await Like.findOneAndUpdate({ userId: userId }, { $addToSet: { like: id } }, { new: true })
-			const blog = await Blog.findOneAndUpdate({ _id: id }, { $inc: { like: 1 } }, { new: true })
-			return res.status(200).json(blog.like)
+		const updateUserLikes = isLiked ? { $pull: { like: id } } : { $addToSet: { like: id } }
+		const updateBlogLikes = isLiked ? { $inc: { like: -1 } } : { $inc: { like: 1 } }
+
+		const likeUpdate = await Like.findOneAndUpdate({ userId: userId }, updateUserLikes, { new: true })
+		const blogUpdate = await Blog.findOneAndUpdate({ _id: id }, updateBlogLikes, { new: true })
+
+		if (!likeUpdate || !blogUpdate) {
+			return res.sendStatus(404)
 		}
+		return res.status(200).json(blogUpdate.like)
 	} catch (error) {
-		console.error(error)
-		res.status(500).json({ message: 'server failed to bookmark post' })
+		return res.status(500).json({ message: 'Server failed to like/unlike post' })
 	}
 }
 

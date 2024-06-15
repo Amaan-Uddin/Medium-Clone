@@ -92,6 +92,9 @@ const ReadBlog = () => {
 				body: JSON.stringify({ userId: user._id, id: blog._id, ...body }),
 				headers: { 'Content-type': 'application/json' },
 			})
+			if (response.status === 404)
+				throw new Error(`Something went wrong, could not update ${targetId === 'like' ? 'like' : 'bookmark'}`)
+
 			if (!response.ok) throw new Error(`Failed to update ${targetId === 'like' ? 'likes' : 'bookmark'}`)
 			const data = await response.json()
 

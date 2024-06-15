@@ -75,7 +75,7 @@ const Home = ({ allTags, posts, skip, setSkip, limit, setLimit }) => {
 							activeTag === 0 ? (
 								<>
 									<Feed posts={posts} />
-									{skip !== -1 ? (
+									{skip !== -1 && posts.length > 3 ? (
 										<div className="container d-flex justify-content-center py-2">
 											<button
 												className="show-more-btn"

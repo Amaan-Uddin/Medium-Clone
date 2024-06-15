@@ -9,7 +9,7 @@ import 'react-loading-skeleton/dist/skeleton.css'
 function getWordCount(content) {
 	const cleanedString = content.replace(/<\/?[^>]+(>|$)/g, '')
 	const wordsArray = cleanedString.split(/\s+/).filter((word) => word.length > 0)
-	const readTimeMinutes = wordsArray.length / 200
+	const readTimeMinutes = wordsArray.length / 150
 	const roundedReadTimeMinutes = Math.ceil(readTimeMinutes) // Round up to the nearest minute
 	return roundedReadTimeMinutes
 }
