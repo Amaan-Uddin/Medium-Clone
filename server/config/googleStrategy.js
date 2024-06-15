@@ -37,9 +37,11 @@ passport.use(
 
 // check chatgpt if not working https://chat.openai.com/share/57c4b8c2-e1f0-4087-b2a7-1a46d69b3a99
 passport.serializeUser((user, done) => {
+	console.log(user)
 	done(null, user)
 })
 
 passport.deserializeUser((user, done) => {
+	console.log(user)
 	done(null, user)
 })

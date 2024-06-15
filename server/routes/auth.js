@@ -37,7 +37,7 @@ router.get('/user', userAuthenticated, (req, res) => {
 		...req.user,
 		loggedIn: true,
 	}
-	res.json(user)
+	res.status(200).json(user)
 })
 
 module.exports = router
