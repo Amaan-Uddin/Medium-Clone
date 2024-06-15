@@ -14,6 +14,7 @@ router.get(
 		failureMessage: true,
 	}),
 	async (req, res) => {
+		console.log('User authenticated:', req.user)
 		await Bookmark.findOrCreate({ userId: req.user._id })
 		await Like.findOrCreate({ userId: req.user._id })
 		await Profile.findOrCreate({ userId: req.user._id })
