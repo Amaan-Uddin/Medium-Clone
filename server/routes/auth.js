@@ -10,14 +10,14 @@ router.get('/google', passport.authenticate('google', { scope: ['email', 'profil
 router.get(
 	'/google/callback',
 	passport.authenticate('google', {
-		failureRedirect: 'http://localhost:5173/',
+		failureRedirect: process.env.CLIENT_URL,
 		failureMessage: true,
 	}),
 	async (req, res) => {
 		await Bookmark.findOrCreate({ userId: req.user._id })
 		await Like.findOrCreate({ userId: req.user._id })
 		await Profile.findOrCreate({ userId: req.user._id })
-		res.redirect(`http://localhost:5173/home`)
+		res.redirect(`${process.env.CLIENT_URL}/home`)
 	}
 )
 
