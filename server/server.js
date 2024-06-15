@@ -39,7 +39,7 @@ app.use(
 		resave: false,
 		saveUninitialized: false,
 		expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-		cookie: { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 },
+		cookie: { httpOnly: true, secure: process.env.NODE_ENV === 'Production', maxAge: 24 * 60 * 60 * 1000 },
 		store: MongoStore.create({ mongoUrl: process.env.MONGO_URI, collectionName: 'sessions' }),
 	})
 )
