@@ -37,11 +37,17 @@ module.exports = (passport) => {
 
 	// check chatgpt if not working https://chat.openai.com/share/57c4b8c2-e1f0-4087-b2a7-1a46d69b3a99
 	passport.serializeUser((user, done) => {
-		done(null, user)
+		console.log('serializeUser', user)
+		done(null, user.id)
 	})
 
-	passport.deserializeUser((user, done) => {
-		console.log('deserialize', user)
-		done(null, user) // Deserialize user from the id
+	passport.deserializeUser(async (id, done) => {
+		console.log('deserializeUser', id)
+		try {
+			const user = await User.findById(id)
+			done(null, user)
+		} catch (error) {
+			done(error, null)
+		}
 	})
 }

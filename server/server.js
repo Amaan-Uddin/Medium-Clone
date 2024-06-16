@@ -9,7 +9,6 @@ const cookieParser = require('cookie-parser')
 const passport = require('passport')
 const cors = require('cors')
 const path = require('path')
-require('./config/googleStrategy')(passport)
 
 const authRouter = require('./routes/auth')
 const apiRouter = require('./routes/api')
@@ -45,6 +44,8 @@ app.use(
 )
 app.use(passport.initialize())
 app.use(passport.session())
+
+require('./config/googleStrategy')(passport)
 
 app.use('/auth', authRouter)
 app.use('/api', apiRouter)
