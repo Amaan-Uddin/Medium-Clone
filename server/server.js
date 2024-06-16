@@ -35,9 +35,10 @@ app.use(
 		saveUninitialized: false,
 		cookie: {
 			httpOnly: true,
-			secure: process.env.NODE_ENV === 'Production',
+			secure: true,
 			maxAge: 24 * 60 * 60 * 1000,
-			sameSite: process.env.NODE_ENV === 'Production' ? 'None' : 'Lax',
+			sameSite: 'none',
+			domain: 'https://medium-clone-server.onrender.com',
 		},
 		store: MongoStore.create({ mongoUrl: process.env.MONGO_URI, collectionName: 'sessions' }),
 	})

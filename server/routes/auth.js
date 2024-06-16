@@ -18,12 +18,12 @@ router.get(
 		await Bookmark.findOrCreate({ userId: req.user._id })
 		await Like.findOrCreate({ userId: req.user._id })
 		await Profile.findOrCreate({ userId: req.user._id })
-		res.cookie('connect.sid', req.sessionID, {
-			httpOnly: true, // Ensures the cookie is only accessible via HTTP/S
-			secure: process.env.NODE_ENV === 'production', // Ensures the cookie is sent over HTTPS in production
-			sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Adjust based on your security requirements
-			maxAge: 24 * 60 * 60 * 1000, // 1 day (example expiration time)
-		})
+		// res.cookie('connect.sid', req.sessionID, {
+		// 	httpOnly: true, // Ensures the cookie is only accessible via HTTP/S
+		// 	secure: process.env.NODE_ENV === 'production', // Ensures the cookie is sent over HTTPS in production
+		// 	sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Adjust based on your security requirements
+		// 	maxAge: 24 * 60 * 60 * 1000, // 1 day (example expiration time)
+		// })
 		res.redirect(`${process.env.CLIENT_URL}/home`)
 	}
 )
