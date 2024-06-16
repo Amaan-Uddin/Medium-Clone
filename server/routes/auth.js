@@ -14,7 +14,7 @@ router.get(
 		failureMessage: true,
 	}),
 	async (req, res) => {
-		console.log('User authenticated:', req.user)
+		console.log('User authenticated:', req.user, 'Session:', req.session, 'isAuthenticated:', req.isAuthenticated())
 		await Bookmark.findOrCreate({ userId: req.user._id })
 		await Like.findOrCreate({ userId: req.user._id })
 		await Profile.findOrCreate({ userId: req.user._id })
