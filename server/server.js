@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 const connectDB = require('./config/dbConfig')
 const session = require('express-session')
 const MongoStore = require('connect-mongo')
+const cookieParser = require('cookie-parser')
 const passport = require('passport')
 const cors = require('cors')
 const path = require('path')
@@ -16,6 +17,7 @@ const apiRouter = require('./routes/api')
 const app = express()
 connectDB()
 
+app.use(cookieParser())
 app.use(
 	cors({
 		origin: process.env.CLIENT_URL,
