@@ -8,7 +8,7 @@ const MongoStore = require('connect-mongo')
 const passport = require('passport')
 const cors = require('cors')
 const path = require('path')
-require('./config/googleStrategy')
+require('./config/googleStrategy')(passport)
 
 const authRouter = require('./routes/auth')
 const apiRouter = require('./routes/api')
