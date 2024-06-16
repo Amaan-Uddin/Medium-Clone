@@ -37,7 +37,7 @@ app.use(
 			httpOnly: true,
 			secure: process.env.NODE_ENV === 'Production',
 			maxAge: 24 * 60 * 60 * 1000,
-			sameSite: process.env.NODE_ENV === 'Production' ? 'none' : 'Lax',
+			sameSite: process.env.NODE_ENV === 'Production' ? 'None' : 'Lax',
 		},
 		store: MongoStore.create({ mongoUrl: process.env.MONGO_URI, collectionName: 'sessions' }),
 	})
