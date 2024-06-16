@@ -14,6 +14,7 @@ passport.use(
 			try {
 				// get the returned data from profile
 				let data = profile?._json
+				console.log(data)
 				let user = await User.findOne({ email: data.email })
 				if (!user) {
 					// create user, if user does not exist
