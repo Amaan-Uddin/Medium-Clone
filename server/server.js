@@ -42,6 +42,7 @@ app.use(
 		store: MongoStore.create({ mongoUrl: process.env.MONGO_URI, collectionName: 'sessions' }),
 	})
 )
+app.use(passport.authenticate('session'))
 app.use(passport.initialize())
 app.use(passport.session())
 
