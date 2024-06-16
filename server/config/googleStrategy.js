@@ -14,7 +14,6 @@ passport.use(
 			try {
 				// get the returned data from profile
 				let data = profile?._json
-				console.log(data)
 				let user = await User.findOne({ email: data.email })
 				if (!user) {
 					// create user, if user does not exist
@@ -44,6 +43,7 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser(async (id, done) => {
 	try {
 		const user = await User.findById(id)
+		console.log('deserialize', user)
 		done(null, user) // Deserialize user from the id
 	} catch (error) {
 		done(error, null)

@@ -32,20 +32,13 @@ router.get('/logout', (req, res) => {
 	})
 })
 
-router.get(
-	'/user',
-	(req, res, next) => {
-		console.log(req.user, req.session, req.isAuthenticated())
-		if (req.isAuthenticated()) next()
-		else res.json({ error: 'unauthorized', loggedIn: false })
-	},
-	(req, res) => {
-		const user = {
-			...req.user,
-			loggedIn: true,
-		}
-		res.status(200).json(user)
+router.get('/user', userAuthenticated, (req, res) => {
+	console.log('user here', req.user)
+	const user = {
+		...req.user._doc,
+		loggedIn: true,
 	}
-)
+	res.status(200).json(user)
+})
 
 module.exports = router

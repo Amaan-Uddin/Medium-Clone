@@ -8,16 +8,10 @@ const MongoStore = require('connect-mongo')
 const passport = require('passport')
 const cors = require('cors')
 const path = require('path')
+require('./config/googleStrategy')
 
 const authRouter = require('./routes/auth')
 const apiRouter = require('./routes/api')
-
-const {
-	removeBlogFromBookmarksQueue,
-	removeBlogFromLikesQueue,
-	removeBlogFromTagsQueue,
-	removeCommentsQueue,
-} = require('./middleware/blogRemoveQueue')
 
 const app = express()
 connectDB()
@@ -41,11 +35,8 @@ app.use(
 		store: MongoStore.create({ mongoUrl: process.env.MONGO_URI, collectionName: 'sessions' }),
 	})
 )
-console.log(process.env.NODE_ENV, process.env.NODE_ENV === 'Production')
 app.use(passport.initialize())
 app.use(passport.session())
-
-require('./config/googleStrategy')
 
 app.use('/auth', authRouter)
 app.use('/api', apiRouter)
