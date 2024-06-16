@@ -9,7 +9,7 @@ const cookieParser = require('cookie-parser')
 const passport = require('passport')
 const cors = require('cors')
 const path = require('path')
-require('./config/googleStrategy')(passport)
+require('./config/googleStrategy')
 const authRouter = require('./routes/auth')
 const apiRouter = require('./routes/api')
 
