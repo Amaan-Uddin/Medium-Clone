@@ -40,6 +40,7 @@ const Header = () => {
 				})
 				if (!response.ok) throw new Error('Something went wrong, server failed to fetch user.')
 				const data = await response.json()
+				console.log(data)
 				setUser(data)
 			} catch (error) {
 				showToast(error.message)
