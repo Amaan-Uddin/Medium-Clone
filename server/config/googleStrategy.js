@@ -36,18 +36,34 @@ passport.use(
 )
 
 // check chatgpt if not working https://chat.openai.com/share/57c4b8c2-e1f0-4087-b2a7-1a46d69b3a99
-passport.serializeUser((user, done) => {
-	console.log('serializeUser', user)
-	done(null, user._id)
+// passport.serializeUser((user, done) => {
+// 	console.log('serializeUser', user)
+// 	done(null, user._id)
+// })
+
+// passport.deserializeUser(async (id, done) => {
+// 	try {
+// 		console.log('deserializeUser', id)
+// 		const user = await User.findOne({ _id: id })
+// 		console.log('Found user:', user)
+// 		done(null, user)
+// 	} catch (error) {
+// 		done(error, null)
+// 	}
+// })
+passport.serializeUser(function (user, cb) {
+	process.nextTick(function () {
+		console.log(user, user.id, user._id)
+		return cb(null, {
+			id: user.id,
+			username: user.username,
+			picture: user.picture,
+		})
+	})
 })
 
-passport.deserializeUser(async (id, done) => {
-	try {
-		console.log('deserializeUser', id)
-		const user = await User.findOne({ _id: id })
-		console.log('Found user:', user)
-		done(null, user)
-	} catch (error) {
-		done(error, null)
-	}
+passport.deserializeUser(function (user, cb) {
+	process.nextTick(function () {
+		return cb(null, user)
+	})
 })
