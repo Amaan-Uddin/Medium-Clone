@@ -17,7 +17,7 @@ const newPost = async (req, res) => {
 
 		const profile = await findOrCreate({ userId: userId }, Profile)
 		const result = await cloudinary.uploader.upload(req.file.path, {
-			folder: process.env.CLOUDINARY_PROD_DIRECTORY,
+			folder: process.env.NODE_ENV === 'Production' ? 'medium-clone' : 'mern-blog',
 			resource_type: 'image',
 			type: 'upload',
 		})

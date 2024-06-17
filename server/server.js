@@ -30,6 +30,7 @@ app.use(
 		secret: process.env.SESSION_SECRET,
 		resave: false,
 		saveUninitialized: false,
+		expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
 		cookie: {
 			httpOnly: true,
 			secure: process.env.NODE_ENV === 'Production' ? true : false,
@@ -39,6 +40,7 @@ app.use(
 		store: MongoStore.create({ mongoUrl: process.env.MONGO_URI, collectionName: 'sessions' }),
 	})
 )
+
 app.use(passport.initialize())
 app.use(passport.session())
 
