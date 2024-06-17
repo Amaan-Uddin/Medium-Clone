@@ -5,7 +5,6 @@ const mongoose = require('mongoose')
 const connectDB = require('./config/dbConfig')
 const session = require('express-session')
 const MongoStore = require('connect-mongo')
-const cookieParser = require('cookie-parser')
 const passport = require('passport')
 const cors = require('cors')
 const path = require('path')
@@ -16,12 +15,10 @@ const apiRouter = require('./routes/api')
 const app = express()
 connectDB()
 
-app.use(cookieParser())
 app.use(
 	cors({
 		origin: process.env.CLIENT_URL,
 		credentials: true,
-		methods: ['GET', 'POST', 'PUT', 'DELETE'],
 	})
 )
 
@@ -35,12 +32,11 @@ app.use(
 		saveUninitialized: false,
 		cookie: {
 			httpOnly: true,
-			secure: process.env.COOKIE_SECURE,
+			secure: process.env.NODE_ENV === 'Production' ? true : false,
 			maxAge: 24 * 60 * 60 * 1000,
-			sameSite: process.env.COOKIE_SAMESITE,
-			domain: process.env.COOKIE_DOMAIN_NAME,
+			sameSite: process.env.NODE_ENV === 'Production' ? 'none' : 'lax',
 		},
-		// store: MongoStore.create({ mongoUrl: process.env.MONGO_URI, collectionName: 'sessions' }),
+		store: MongoStore.create({ mongoUrl: process.env.MONGO_URI, collectionName: 'sessions' }),
 	})
 )
 app.use(passport.initialize())

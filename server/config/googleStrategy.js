@@ -12,11 +12,9 @@ passport.use(
 		},
 		async function (request, accessToken, refreshToken, profile, done) {
 			try {
-				// get the returned data from profile
 				let data = profile?._json
 				let user = await User.findOne({ email: data.email })
 				if (!user) {
-					// create user, if user does not exist
 					const newUser = await User.create({
 						email: data.email,
 						googleId: data.id,
@@ -36,31 +34,15 @@ passport.use(
 )
 
 // check chatgpt if not working https://chat.openai.com/share/57c4b8c2-e1f0-4087-b2a7-1a46d69b3a99
-// passport.serializeUser((user, done) => {
-// 	console.log('serializeUser', user)
-// 	done(null, user._id)
-// })
-
-// passport.deserializeUser(async (id, done) => {
-// 	try {
-// 		console.log('deserializeUser', id)
-// 		const user = await User.findOne({ _id: id })
-// 		console.log('Found user:', user)
-// 		done(null, user)
-// 	} catch (error) {
-// 		done(error, null)
-// 	}
-// })
-passport.serializeUser(function (user, cb) {
-	process.nextTick(function () {
-		console.log(user, user.id)
-		return cb(null, user)
-	})
+passport.serializeUser((user, done) => {
+	done(null, user._id)
 })
 
-passport.deserializeUser(function (user, cb) {
-	process.nextTick(function () {
-		console.log('deserialize', user)
-		return cb(null, user)
-	})
+passport.deserializeUser(async (id, done) => {
+	try {
+		const user = await User.findOne({ _id: id })
+		done(null, user)
+	} catch (error) {
+		done(error, null)
+	}
 })
