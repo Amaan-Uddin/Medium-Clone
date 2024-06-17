@@ -36,7 +36,7 @@ router.get('/logout', (req, res) => {
 	})
 })
 
-router.get('/user', passport.authenticate('session'), userAuthenticated, (req, res) => {
+router.get('/user', userAuthenticated, (req, res) => {
 	const user = {
 		...req.user._doc,
 		loggedIn: true,

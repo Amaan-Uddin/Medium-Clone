@@ -23,9 +23,9 @@ passport.use(
 						displayName: `${data.given_name} ${data.family_name}`,
 						photos: profile.photos.map((photo) => photo.value),
 					})
-					return await done(null, newUser)
+					return done(null, newUser)
 				}
-				return await done(null, user)
+				return done(null, user)
 			} catch (error) {
 				return done(error, false)
 			}
