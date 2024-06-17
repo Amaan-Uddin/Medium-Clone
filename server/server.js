@@ -21,6 +21,7 @@ app.use(
 	cors({
 		origin: process.env.CLIENT_URL,
 		credentials: true,
+		methods: ['GET', 'POST', 'PUT', 'DELETE'],
 	})
 )
 
@@ -39,10 +40,9 @@ app.use(
 			sameSite: process.env.COOKIE_SAMESITE,
 			domain: process.env.COOKIE_DOMAIN_NAME,
 		},
-		store: MongoStore.create({ mongoUrl: process.env.MONGO_URI, collectionName: 'sessions' }),
+		// store: MongoStore.create({ mongoUrl: process.env.MONGO_URI, collectionName: 'sessions' }),
 	})
 )
-app.use(passport.authenticate('session'))
 app.use(passport.initialize())
 app.use(passport.session())
 
