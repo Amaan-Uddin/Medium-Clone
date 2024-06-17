@@ -53,17 +53,14 @@ passport.use(
 // })
 passport.serializeUser(function (user, cb) {
 	process.nextTick(function () {
-		console.log(user, user.id, user._id)
-		return cb(null, {
-			id: user.id,
-			username: user.username,
-			picture: user.picture,
-		})
+		console.log(user, user.id)
+		return cb(null, user)
 	})
 })
 
 passport.deserializeUser(function (user, cb) {
 	process.nextTick(function () {
+		console.log('deserialize', user)
 		return cb(null, user)
 	})
 })
