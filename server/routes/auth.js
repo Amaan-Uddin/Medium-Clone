@@ -18,13 +18,7 @@ router.get(
 			await Bookmark.findOrCreate({ userId: req.user._id })
 			await Like.findOrCreate({ userId: req.user._id })
 			await Profile.findOrCreate({ userId: req.user._id })
-			req.login(req.user, (err) => {
-				if (err) {
-					console.log(err)
-					return res.status(500).json({ message: 'Login failed' })
-				}
-				res.redirect(`${process.env.CLIENT_URL}/home`)
-			})
+			res.redirect(`${process.env.CLIENT_URL}/home`)
 		} catch (err) {
 			console.log(err)
 			res.status(500).json({ message: 'Internal server error' })
@@ -42,7 +36,7 @@ router.get('/logout', (req, res) => {
 	})
 })
 
-router.get('/user', userAuthenticated, (req, res) => {
+router.get('/user', passport.authenticate('session'), userAuthenticated, (req, res) => {
 	const user = {
 		...req.user._doc,
 		loggedIn: true,
